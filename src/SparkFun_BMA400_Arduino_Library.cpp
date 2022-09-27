@@ -92,7 +92,7 @@ int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
     bma400_sensor_conf config =
     {
         .type = BMA400_ACCEL,
-        .param.accel = {0}
+        .param = {0}
     };
     err = bma400_get_sensor_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -149,7 +149,7 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
     bma400_sensor_conf config =
     {
         .type = BMA400_ACCEL,
-        .param.accel = {0}
+        .param = {0}
     };
     err = bma400_get_sensor_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -335,11 +335,11 @@ int8_t BMA400::setInterruptPinMode(bma400_int_chan channel, uint8_t mode)
     bma400_device_conf config =
     {
         .type = BMA400_INT_PIN_CONF,
-        .param.int_conf =
+        .param = {.int_conf =
         {
             .int_chan = channel,
             .pin_conf = mode
-        }
+        }}
     };
     return bma400_set_device_conf(&config, 1, &sensor);
 }
@@ -369,7 +369,7 @@ int8_t BMA400::setGeneric1Interrupt(bma400_gen_int_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_GEN1_INT,
-        .param.gen_int = *config
+        .param = {.gen_int = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -379,7 +379,7 @@ int8_t BMA400::setGeneric2Interrupt(bma400_gen_int_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_GEN2_INT,
-        .param.gen_int = *config
+        .param = {.gen_int = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -389,7 +389,7 @@ int8_t BMA400::setActivityChangeInterrupt(bma400_act_ch_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_ACTIVITY_CHANGE_INT,
-        .param.act_ch = *config
+        .param = {.act_ch = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -399,7 +399,7 @@ int8_t BMA400::setOrientationChangeInterrupt(bma400_orient_int_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_ORIENT_CHANGE_INT,
-        .param.orient = *config
+        .param = {.orient = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -409,7 +409,7 @@ int8_t BMA400::setTapInterrupt(bma400_tap_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_TAP_INT,
-        .param.tap = *config
+        .param = {.tap = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -419,7 +419,7 @@ int8_t BMA400::setStepCounterInterrupt(bma400_step_int_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_STEP_COUNTER_INT,
-        .param.step_cnt = *config
+        .param {.step_cnt = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
@@ -433,7 +433,7 @@ int8_t BMA400::setFIFOConfigFlags(uint8_t flags)
     struct bma400_device_conf config =
     {
         .type = BMA400_FIFO_CONF,
-        .param.fifo_conf = {0}
+        .param = {0}
     };
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -456,7 +456,7 @@ int8_t BMA400::setFIFOWatermark(uint16_t numData)
     struct bma400_device_conf config =
     {
         .type = BMA400_FIFO_CONF,
-        .param.fifo_conf = {0}
+        .param = {0}
     };
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -488,7 +488,7 @@ int8_t BMA400::setFIFOFullInterruptChannel(bma400_int_chan channel)
     struct bma400_device_conf config =
     {
         .type = BMA400_FIFO_CONF,
-        .param.fifo_conf = {0}
+        .param = {0}
     };
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -510,7 +510,7 @@ int8_t BMA400::setFIFOWatermarkInterruptChannel(bma400_int_chan channel)
     struct bma400_device_conf config =
     {
         .type = BMA400_FIFO_CONF,
-        .param.fifo_conf = {0}
+        .param = {0}
     };
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
@@ -551,7 +551,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     struct bma400_device_conf config =
     {
         .type = BMA400_FIFO_CONF,
-        .param.fifo_conf = {0}
+        .param = {0}
     };
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
