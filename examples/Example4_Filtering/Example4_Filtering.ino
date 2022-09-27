@@ -38,8 +38,8 @@ void setup()
     err = accelerometer.setOSR(BMA400_ACCEL_OSR_SETTING_3);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // OSR setting failed, most likely a communication error (code -2)
+        Serial.print("OSR setting failed! Error code: ");
         Serial.println(err);
     }
 
@@ -49,8 +49,8 @@ void setup()
     err = accelerometer.setRange(BMA400_RANGE_2G);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // Range setting failed, most likely a communication error (code -2)
+        Serial.print("Range setting failed! Error code: ");
         Serial.println(err);
     }
 
@@ -58,36 +58,38 @@ void setup()
     // Filter 2 is the only source for the interrupt engine, and its parameters
     // are fixed at 100Hz ODR and 48Hz bandwidth, so it's best to use filter 1
     // for measurements. It's also possible to use the dedicated low-pass filter
-    // by passing BMA400_DATA_SRC_ACCEL_FILT_LP, however its parameters are also
-    // fixed at 100Hz ODR and 1Hz bandwidth.
+    // by passing BMA400_DATA_SRC_ACCEL_FILT_LP, however its parameters are
+    // fixed at 100Hz ODR and 1Hz bandwidth
     err = accelerometer.setDataSource(BMA400_DATA_SRC_ACCEL_FILT_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // Data source failed, most likely a communication error (code -2)
+        Serial.print("Data source failed! Error code: ");
         Serial.println(err);
     }
 
-    // Here we can set the filter 1 bandwidth to 2 possible settings:
+    // Here we can set the filter 1 bandwidth frequency to 2 possible settings:
     // BMA400_ACCEL_FILT1_BW_0 = 0.48 * ODR
     // BMA400_ACCEL_FILT1_BW_1 = 0.24 * ODR
+    // Lower bandwidths result in smoother data filtering
     err = accelerometer.setFilter1Bandwidth(BMA400_ACCEL_FILT1_BW_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // Filter bandwidth failed, most likely a communication error (code -2)
+        Serial.print("Filter bandwidth failed! Error code: ");
         Serial.println(err);
     }
 
     // Since the filter bandwidth depends on the ODR (output data rate), we can
     // achieve smaller bandwidths by reducing the ODR from the default of 200Hz.
     // If we choose the minimum ODR of 12.5Hz with the bandwidth set to 0.24, we
-    // achieve a bandwidth of 3Hz, resulting in very smmooth mesaurements
+    // achieve a bandwidth of 3Hz. Lowering the ODR also reduces the sensor
+    // noise even without any filtering
     err = accelerometer.setODR(BMA400_ODR_12_5HZ);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // ODR setting failed, most likely a communication error (code -2)
+        Serial.print("ODR setting failed! Error code: ");
         Serial.println(err);
     }
 }

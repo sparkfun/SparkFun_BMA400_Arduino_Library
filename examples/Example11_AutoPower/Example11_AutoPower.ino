@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example6 begin!");
+    Serial.println("BMA400 Example11 begin!");
 
     // Initialize the I2C library
     Wire.begin();
@@ -40,12 +40,12 @@ void setup()
     int8_t err = BMA400_OK;
 
     // We'll start the sensor off in low power mode while we set the automatic
-    // power transition configurations
+    // power transition settings
     err = accelerometer.setMode(BMA400_MODE_LOW_POWER);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        // Power mode failed, most likely a communication error (code -2)
+        Serial.print("Power mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -66,15 +66,15 @@ void setup()
     err = accelerometer.setWakeupInterrupt(&wakeupConfig);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        // Wakeup settings failed, most likely a communication error (code -2)
+        Serial.print("Wakeup settings failed! Error code: ");
         Serial.println(err);
     }
 
     // Here we configure the sensor to automatically enter low power mode after
     // a timer reaches the timeout threshold. With the "time reset" trigger, the
     // timer is reset if the generic 2 interrupt is triggered, allowing us to
-    // stay in normal power mode while motion is detected
+    // stay in normal power mode while motion continues
     bma400_auto_lp_conf autoLPConfig =
     {
         .auto_low_power_trigger = BMA400_AUTO_LP_TIME_RESET_EN, // drdy, gen1, timeout, timeout reset
@@ -83,8 +83,8 @@ void setup()
     err = accelerometer.setAutoLowPower(&autoLPConfig);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        // Low power settings failed, most likely a communication error (code -2)
+        Serial.print("Low power settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -95,7 +95,7 @@ void setup()
         .gen_int_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
         .gen_int_dur = 100, // 10ms resolution (eg. gen_int_dur=100 results in 1s)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .data_src = BMA400_DATA_SRC_ACC_FILT2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
+        .data_src = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
         .criterion_sel = BMA400_ACTIVITY_INT, // Trigger interrupts when active or inactive
         .evaluate_axes = BMA400_ANY_AXES_INT, // How to combine axes for interrupt condition (OR/AND)
         .ref_update = BMA400_UPDATE_EVERY_TIME, // Whether to automatically update reference values
@@ -109,7 +109,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -117,8 +117,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -126,7 +126,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_AUTO_WAKEUP_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }
@@ -135,7 +135,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_GEN2_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }
@@ -171,7 +171,7 @@ void loop()
         // Check if this is the auto wakeup interrupt condition
         if(interruptStatus & BMA400_ASSERTED_WAKEUP_INT)
         {
-            Serial.println("Wakeup!");
+            Serial.println("Motion detected!");
             logAccelData();
         }
         else
@@ -186,11 +186,11 @@ void logAccelData()
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
 
-    // Variable tos tore the current power mode
-    uint8_t powerMode;
+    // Variable to store the current power mode
+    uint8_t powerMode = BMA400_MODE_NORMAL;
 
     // Loop until the sensor returns to low power mode
-    do
+    while (powerMode == BMA400_MODE_NORMAL)
     {
         // Get measurements from the sensor
         BMA400_SensorData data = {0};
@@ -215,13 +215,28 @@ void logAccelData()
             // Acquisition failed, most likely a communication error (code -2)
             Serial.print("Error getting data from sensor! Error code: ");
             Serial.println(err);
+
+            // If we got an error here, it will most likely persist, so let's
+            // give up and go back to waiting
+            return;
         }
 
-        // Print 100x per second
-        delay(10);
+        // Print 10x per second
+        delay(100);
 
+        // Check whether sensor returned to low power mode
         err = accelerometer.getMode(&powerMode);
-    } while (powerMode == BMA400_MODE_NORMAL);
+        if(err == BMA400_OK)
+        {
+            // Get mode failed, most likely a communication error (code -2)
+            Serial.print("Error getting power mode! Error code: ");
+            Serial.println(err);
+
+            // If we got an error here, it will most likely persist, so let's
+            // give up and go back to waiting
+            return;
+        }
+    }
     
 }
 

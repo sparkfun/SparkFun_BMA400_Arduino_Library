@@ -44,8 +44,8 @@ void setup()
     err = accelerometer.setODR(BMA400_ODR_12_5HZ);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // ODR setting failed, most likely a communication error (code -2)
+        Serial.print("ODR setting failed! Error code: ");
         Serial.println(err);
     }
 
@@ -54,7 +54,7 @@ void setup()
     err = accelerometer.setDRDYInterruptChannel(BMA400_INT_CHANNEL_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt channel failed, most likely a communication error (code -2)
         Serial.print("Interrupt channel failed! Error code: ");
         Serial.println(err);
     }
@@ -63,8 +63,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -72,7 +72,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_DRDY_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }

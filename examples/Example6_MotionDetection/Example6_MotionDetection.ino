@@ -41,18 +41,18 @@ void setup()
 
     // Here we configure the generic interrupt feature of the BMA400. It
     // triggers an interrupt when the measured acceleration exceeds some
-    // reference acceleration that we specify. There are several other
-    // parameters that can be configured, such as threshold, hysteresis,
-    // automatic reference updates, etc. The BMA400 has 2 generic interrupts
-    // that can be configured independently
+    // reference acceleration that we can specify. There are several other
+    // parameters that can be configured, such as acceleration threshold,
+    // hysteresis, automatic reference updates, etc. The BMA400 has 2 generic
+    // interrupts that can be configured independently
     bma400_gen_int_conf config =
     {
         .gen_int_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
         .gen_int_dur = 10, // 10ms resolution (eg. gen_int_dur=10 results in 100ms)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .data_src = BMA400_DATA_SRC_ACC_FILT2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
+        .data_src = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
         .criterion_sel = BMA400_ACTIVITY_INT, // Trigger interrupts when active or inactive
-        .evaluate_axes = BMA400_ANY_AXES_INT, // How to combine axes for interrupt condition (OR/AND)
+        .evaluate_axes = BMA400_ANY_AXES_INT, // Logical combining of axes for interrupt condition (OR/AND)
         .ref_update = BMA400_UPDATE_MANUAL, // Whether to automatically update reference values
         .hysteresis = BMA400_HYST_96_MG, // Hysteresis acceleration for noise rejection
         .int_thres_ref_x = 0, // Raw 12-bit acceleration value
@@ -64,7 +64,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -72,8 +72,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -81,7 +81,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_GEN1_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }

@@ -44,7 +44,7 @@ void setup()
     {
         .act_ch_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .data_source = BMA400_DATA_SRC_ACC_FILT2, // Which filter to use (datasheet recommends filter 2)
+        .data_source = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (datasheet recommends filter 2)
         .act_ch_ntps = BMA400_ACT_CH_SAMPLE_CNT_128, // How many measurements to evaluate
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
@@ -52,7 +52,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -60,8 +60,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -69,7 +69,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_ACTIVITY_CHANGE_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }

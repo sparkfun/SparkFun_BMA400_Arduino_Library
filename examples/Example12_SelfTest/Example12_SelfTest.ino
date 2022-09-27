@@ -12,7 +12,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example1 begin!");
+    Serial.println("BMA400 Example12 begin!");
 
     // Initialize the I2C library
     Wire.begin();
@@ -44,9 +44,15 @@ void setup()
     {
         Serial.println("Self test passed!");
     }
-    else
+    else if(err == BMA400_W_SELF_TEST_FAIL)
     {
         Serial.println("Self test failed!");
+    }
+    else
+    {
+        // Self test didn't finish, most likely a communication error (code -2)
+        Serial.print("Self test didn't finish! Error code: ");
+        Serial.println(err);
     }
 }
 

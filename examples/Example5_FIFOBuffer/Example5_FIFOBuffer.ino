@@ -51,15 +51,16 @@ void setup()
     err = accelerometer.setODR(BMA400_ODR_12_5HZ);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("ODR failed! Error code: ");
+        // ODR setting failed, most likely a communication error (code -2)
+        Serial.print("ODR setting failed! Error code: ");
         Serial.println(err);
     }
 
-    // The following flags are available:
+    // Here we set the configuration flags for the FIFO buffer. The following
+    // flags are available:
     // BMA400_FIFO_AUTO_FLUSH   - Flush FIFO when power mode changes
     // BMA400_FIFO_STOP_ON_FULL - Stop storing data when FIFO is full
-    // BMA400_FIFO_TIME_EN      - Store sensor time for each measurement
+    // BMA400_FIFO_TIME_EN      - Log sensor time when FIFO is read out
     // BMA400_FIFO_DATA_SRC     - Store data from filter 2 instead of filter 1
     // BMA400_FIFO_8_BIT_EN     - Store data with only 8 bits instead of 12
     // BMA400_FIFO_X_EN         - Store x-axis data
@@ -69,8 +70,8 @@ void setup()
     err = accelerometer.setFIFOConfigFlags(flags);
     if(err != BMA400_OK)
     {
-        // Setting ODR failed, most likely an invalid frequncy (code -12)
-        Serial.print("ODR setting failed! Error code: ");
+        // FIFO config flags failed, most likely a communication error (code -2)
+        Serial.print("FIFO config flags failed! Error code: ");
         Serial.println(err);
     }
     
@@ -78,8 +79,8 @@ void setup()
     err = accelerometer.setFIFOWatermark(numSamples);
     if(err != BMA400_OK)
     {
-        // Setting ODR failed, most likely an invalid frequncy (code -12)
-        Serial.print("ODR setting failed! Error code: ");
+        // Watermark failed, most likely a communication error (code -2)
+        Serial.print("Watermark failed! Error code: ");
         Serial.println(err);
     }
 
@@ -88,8 +89,8 @@ void setup()
     err = accelerometer.setFIFOWatermarkInterruptChannel(BMA400_INT_CHANNEL_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt channel failed, most likely a communication error (code -2)
+        Serial.print("Interrupt channel failed! Error code: ");
         Serial.println(err);
     }
 
@@ -97,8 +98,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -106,7 +107,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_FIFO_WM_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }
@@ -129,8 +130,8 @@ void loop()
         Serial.print("FIFO length failed! Error code: ");
         Serial.println(err);
 
-        // If getFIFOLength() failed this time, it will most likely fail next time. So
-        // let's wait a bit before trying again
+        // If getFIFOLength() failed this time, it will most likely fail next
+        // time. So let's wait a bit before trying again
         delay(1000);
     }
 
@@ -182,26 +183,18 @@ void loop()
             return;
         }
 
-        // Make sure this is the "FIFO watermerk" interrupt condition
+        // Check if this is the FIFO watermerk interrupt condition
         if(interruptStatus & BMA400_ASSERTED_FIFO_WM_INT)
         {
             // Get FIFO data from the sensor
             uint16_t samplesRead = numSamples;
             err = accelerometer.getFIFOData(fifoData, &samplesRead);
-            if(err < BMA400_OK)
+            if(err != BMA400_OK)
             {
                 // FIFO data get failed, most likely a communication error (code -2)
                 Serial.print("Get FIFO data failed! Error code: ");
                 Serial.println(err);
                 return;
-            }
-            if(err > BMA400_OK)
-            {
-                // FIFO data get warning, most likely min/max pressure/temperature (codes 3/4/5/6)
-                // This is likely to occur on some systems (eg. Arduino Uno)
-                // when numSamples is large (eg. >= 5)
-                Serial.print("Get FIFO data warning! Error code: ");
-                Serial.println(err);
             }
 
             // samplesRead will be changed to the number of data frames actually
@@ -215,7 +208,7 @@ void loop()
                 Serial.println(samplesRead);
             }
 
-            // Data was acquired successfully, print it all out
+            // Print out all acquired data
             for(uint16_t i = 0; i < samplesRead; i++)
             {
                 Serial.print("Acceleration in g's - ");

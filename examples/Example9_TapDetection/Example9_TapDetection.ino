@@ -39,7 +39,10 @@ void setup()
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
 
-    // Here we configure the tap detection feature of the BMA400.
+    // Here we configure the tap detection feature of the BMA400. It can detect
+    // both single and double taps as a form of user input. There are a number
+    // of parameters than can be configured to help distinguish taps from other
+    // sources of noise.
     bma400_tap_conf config =
     {
         .axes_sel = BMA400_AXIS_Z_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
@@ -53,7 +56,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -61,8 +64,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -70,7 +73,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_SINGLE_TAP_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }
@@ -79,7 +82,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_DOUBLE_TAP_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }

@@ -42,14 +42,15 @@ void setup()
     // Here we configure the orientation change detection feature of the BMA400.
     // It monitors the acceleration, and waits for the measurements to stabalize
     // If the stabalized mesaurements exceed some reference acceleration that we
-    // specify, it triggers an interrupt.There are several parameters that can
+    // specify, it triggers an interrupt. This is intended for applications like
+    // phone screen orientation updating. There are several parameters that can
     // be configured, such as selecting which axes to monitor, hysteresis,
     // automatic reference updates, thresholds, etc.
     bma400_orient_int_conf config =
     {
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .data_src = BMA400_DATA_SRC_ACC_FILT2, // Which filter to use (must be either filt2 or filt_lp)
-        .ref_update = BMA400_UPDATE_MANUAL, // Whether to automatically update reference values
+        .data_src = BMA400_DATA_SRC_ACCEL_FILT_LP, // Which filter to use (must be either filt2 or filt_lp)
+        .ref_update = BMA400_UPDATE_LP_EVERY_TIME, // Whether to automatically update reference values
         .orient_thres = 10, // 8mg resolution (eg. orient_thres=10 results in 80mg)
         .stability_thres = 10, // 8mg resolution (eg. stability_thres=10 results in 80mg)
         .orient_int_dur = 10, // 10ms resolution (eg. gen_int_dur=10 results in 100ms)
@@ -62,7 +63,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -70,8 +71,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -79,7 +80,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_ORIENT_CHANGE_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }

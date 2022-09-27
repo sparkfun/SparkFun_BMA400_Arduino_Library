@@ -52,7 +52,7 @@ void setup()
     if(err != BMA400_OK)
     {
         // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
+        Serial.print("Interrupt settings failed! Error code: ");
         Serial.println(err);
     }
 
@@ -60,8 +60,8 @@ void setup()
     err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin failed! Error code: ");
+        // Interrupt pin mode failed, most likely a communication error (code -2)
+        Serial.print("Interrupt pin mode failed! Error code: ");
         Serial.println(err);
     }
 
@@ -71,7 +71,7 @@ void setup()
     err = accelerometer.enableInterrupt(BMA400_STEP_COUNTER_INT_EN, true);
     if(err != BMA400_OK)
     {
-        // Interrupt settings failed, most likely a communication error (code -2)
+        // Interrupt enable failed, most likely a communication error (code -2)
         Serial.print("Interrupt enable failed! Error code: ");
         Serial.println(err);
     }
@@ -107,7 +107,7 @@ void loop()
         // Check if this is the step interrupt condition
         if(interruptStatus & BMA400_ASSERTED_STEP_INT)
         {
-            // Get total step count
+            // Get total step count and detected activity type (running/walking/still)
             uint32_t stepCount = 0;
             uint8_t activityType = 0;
             err = accelerometer.getStepCount(&stepCount, &activityType);
