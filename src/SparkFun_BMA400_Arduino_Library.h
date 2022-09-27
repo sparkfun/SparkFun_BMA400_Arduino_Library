@@ -68,9 +68,13 @@ class BMA400
         int8_t beginI2C(uint8_t address = BMA400_I2C_ADDRESS_DEFAULT, TwoWire& wirePort = Wire);
         int8_t beginSPI(uint8_t csPin, uint32_t clockFrequency = 100000);
 
-        // Configuration control
+        // Power mode control
         int8_t setMode(uint8_t mode);
         int8_t getMode(uint8_t* mode);
+        int8_t setAutoWakeup(bma400_auto_wakeup_conf* config);
+        int8_t setAutoLowPower(bma400_auto_lp_conf* config);
+
+        // Configuration control
         int8_t setRange(uint8_t range);
         int8_t getRange(uint8_t* range);
         int8_t setODR(uint8_t odr);
@@ -103,6 +107,7 @@ class BMA400
         int8_t setTapInterrupt(bma400_tap_conf* config);
         int8_t setStepCounterInterrupt(bma400_step_int_conf* config);
         int8_t setActivityChangeInterrupt(bma400_act_ch_conf* config);
+        int8_t setWakeupInterrupt(bma400_wakeup_conf* config);
 
         // FIFO control
         int8_t setFIFOConfigFlags(uint8_t flags);

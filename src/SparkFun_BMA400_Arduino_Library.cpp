@@ -83,6 +83,26 @@ int8_t BMA400::getMode(uint8_t* mode)
     return bma400_get_power_mode(mode, &sensor);
 }
 
+int8_t BMA400::setAutoWakeup(bma400_auto_wakeup_conf* config)
+{
+    bma400_device_conf deviceConfig =
+    {
+        .type = BMA400_AUTOWAKEUP_TIMEOUT,
+        .param = {.auto_wakeup = *config}
+    };
+    return bma400_set_device_conf(&deviceConfig, 1, &sensor);
+}
+
+int8_t BMA400::setAutoLowPower(bma400_auto_lp_conf* config)
+{
+    bma400_device_conf deviceConfig =
+    {
+        .type = BMA400_AUTO_LOW_POWER,
+        .param = {.auto_lp = *config}
+    };
+    return bma400_set_device_conf(&deviceConfig, 1, &sensor);
+}
+
 int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
 {
     // Variable to track errors returned by API calls
@@ -384,16 +404,6 @@ int8_t BMA400::setGeneric2Interrupt(bma400_gen_int_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
-int8_t BMA400::setActivityChangeInterrupt(bma400_act_ch_conf* config)
-{
-    bma400_sensor_conf sensorConfig =
-    {
-        .type = BMA400_ACTIVITY_CHANGE_INT,
-        .param = {.act_ch = *config}
-    };
-    return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
-}
-
 int8_t BMA400::setOrientationChangeInterrupt(bma400_orient_int_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -422,6 +432,26 @@ int8_t BMA400::setStepCounterInterrupt(bma400_step_int_conf* config)
         .param {.step_cnt = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
+}
+
+int8_t BMA400::setActivityChangeInterrupt(bma400_act_ch_conf* config)
+{
+    bma400_sensor_conf sensorConfig =
+    {
+        .type = BMA400_ACTIVITY_CHANGE_INT,
+        .param = {.act_ch = *config}
+    };
+    return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
+}
+
+int8_t BMA400::setWakeupInterrupt(bma400_wakeup_conf* config)
+{
+    bma400_device_conf deviceConfig =
+    {
+        .type = BMA400_AUTOWAKEUP_INT,
+        .param = {.wakeup = *config}
+    };
+    return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
 int8_t BMA400::setFIFOConfigFlags(uint8_t flags)
