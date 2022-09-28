@@ -129,6 +129,7 @@ class BMA400
         void convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, uint8_t bitWidth = 12);
 
         // Compute number of bytes per FIFO data frame
+        uint8_t bytesPerFIFOData(uint8_t fifoFlags);
 
         // Read/write helper functions
         static BMA400_INTF_RET_TYPE readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr);
