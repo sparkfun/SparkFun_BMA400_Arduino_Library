@@ -14,6 +14,11 @@
 // Generic error code for invalid settings
 #define BMA400_E_INVALID_SETTING (BMA400_E_INVALID_CONFIG-1)
 
+// Extra exes selection macros, in case user only wants 2 axes
+#define BMA400_AXIS_XY_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Y_EN)
+#define BMA400_AXIS_XZ_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Z_EN)
+#define BMA400_AXIS_YZ_EN (BMA400_AXIS_Y_EN | BMA400_AXIS_Z_EN)
+
 // The BMA400's sensor time register increments at 25.6kHz
 // Note - the last 3 bits of the sensor time registers will always be 0, so the
 // resolution is effectively 3.2kHz

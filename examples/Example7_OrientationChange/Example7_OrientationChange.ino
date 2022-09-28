@@ -9,7 +9,7 @@ uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT; // 0x14
 //uint8_t i2cAddress = BMA400_I2C_ADDRESS_SECONDARY; // 0x15
 
 // Pin used for interrupt detection
-int interruptPin = 2;
+int interruptPin = 5;
 
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
@@ -51,9 +51,9 @@ void setup()
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
         .data_src = BMA400_DATA_SRC_ACCEL_FILT_LP, // Which filter to use (must be either filt2 or filt_lp)
         .ref_update = BMA400_UPDATE_LP_EVERY_TIME, // Whether to automatically update reference values
-        .orient_thres = 10, // 8mg resolution (eg. orient_thres=10 results in 80mg)
-        .stability_thres = 10, // 8mg resolution (eg. stability_thres=10 results in 80mg)
-        .orient_int_dur = 10, // 10ms resolution (eg. gen_int_dur=10 results in 100ms)
+        .orient_thres = 25, // 8mg resolution (eg. orient_thres=25 results in 200mg)
+        .stability_thres = 10, // 8mg resolution (eg. stability_thres=20 results in 80mg)
+        .orient_int_dur = 30, // 10ms resolution (eg. gen_int_dur=30 results in 300ms)
         .orient_ref_x = 0, // Raw 12-bit acceleration value
         .orient_ref_y = 0, // Raw 12-bit acceleration value
         .orient_ref_z = 512, // Raw 12-bit acceleration value (at 4g range (default), 512 = 1g)

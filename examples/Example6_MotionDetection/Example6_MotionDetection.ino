@@ -9,7 +9,7 @@ uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT; // 0x14
 //uint8_t i2cAddress = BMA400_I2C_ADDRESS_SECONDARY; // 0x15
 
 // Pin used for interrupt detection
-int interruptPin = 2;
+int interruptPin = 5;
 
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
@@ -47,13 +47,13 @@ void setup()
     // interrupts that can be configured independently
     bma400_gen_int_conf config =
     {
-        .gen_int_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
-        .gen_int_dur = 10, // 10ms resolution (eg. gen_int_dur=10 results in 100ms)
+        .gen_int_thres = 5, // 8mg resolution (eg. gen_int_thres=5 results in 40mg)
+        .gen_int_dur = 5, // 10ms resolution (eg. gen_int_dur=5 results in 50ms)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
         .data_src = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
         .criterion_sel = BMA400_ACTIVITY_INT, // Trigger interrupts when active or inactive
         .evaluate_axes = BMA400_ANY_AXES_INT, // Logical combining of axes for interrupt condition (OR/AND)
-        .ref_update = BMA400_UPDATE_MANUAL, // Whether to automatically update reference values
+        .ref_update = BMA400_UPDATE_EVERY_TIME, // Whether to automatically update reference values
         .hysteresis = BMA400_HYST_96_MG, // Hysteresis acceleration for noise rejection
         .int_thres_ref_x = 0, // Raw 12-bit acceleration value
         .int_thres_ref_y = 0, // Raw 12-bit acceleration value
