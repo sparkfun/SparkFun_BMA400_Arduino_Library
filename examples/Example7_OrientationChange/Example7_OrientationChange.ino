@@ -97,7 +97,8 @@ void loop()
         // Reset flag for next interrupt
         interruptOccurred = false;
 
-        Serial.print("Interrupt occurred!\t\t");
+        Serial.print("Interrupt occurred!");
+        Serial.print("\t");
 
         // Variable to track errors returned by API calls
         int8_t err = BMA400_OK;

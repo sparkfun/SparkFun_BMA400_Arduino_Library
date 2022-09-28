@@ -88,7 +88,8 @@ void loop()
         // Reset flag for next interrupt
         interruptOccurred = false;
 
-        Serial.print("Interrupt occurred!\t\t");
+        Serial.print("Interrupt occurred!");
+        Serial.print("\t");
 
         // Variable to track errors returned by API calls
         int8_t err = BMA400_OK;
@@ -122,7 +123,7 @@ void loop()
             // Print total step count so far
             Serial.print("Step detected! Step count: ");
             Serial.print(stepCount);
-            Serial.print("\t\t");
+            Serial.print("\t");
 
             // Print the detected activity type (running/walking/still)
             Serial.print("Detected activity type: ");

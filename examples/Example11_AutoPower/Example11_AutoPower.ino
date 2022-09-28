@@ -152,7 +152,8 @@ void loop()
         // Reset flag for next interrupt
         interruptOccurred = false;
 
-        Serial.print("Interrupt occurred!\t\t");
+        Serial.print("Interrupt occurred!");
+        Serial.print("\t");
 
         // Variable to track errors returned by API calls
         int8_t err = BMA400_OK;
@@ -200,15 +201,16 @@ void logAccelData()
         if(err == BMA400_OK)
         {
             // Acquisistion succeeded, print acceleration data
-            Serial.print("Acceleration in g's - ");
+            Serial.print("Acceleration in g's");
+            Serial.print("\t");
             Serial.print("X: ");
-            Serial.print(data.x, 2);
-            Serial.print("\t\t");
+            Serial.print(data.x, 3);
+            Serial.print("\t");
             Serial.print("Y: ");
-            Serial.print(data.y, 2);
-            Serial.print("\t\t");
+            Serial.print(data.y, 3);
+            Serial.print("\t");
             Serial.print("Z: ");
-            Serial.print(data.z, 2);
+            Serial.println(data.z, 3);
         }
         else
         {

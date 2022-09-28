@@ -211,15 +211,16 @@ void loop()
             // Print out all acquired data
             for(uint16_t i = 0; i < samplesRead; i++)
             {
-                Serial.print("Acceleration in g's - ");
+                Serial.print("Acceleration in g's");
+                Serial.print("\t");
                 Serial.print("X: ");
-                Serial.print(fifoData[i].x, 2);
-                Serial.print("\t\t");
+                Serial.print(fifoData[i].x, 3);
+                Serial.print("\t");
                 Serial.print("Y: ");
-                Serial.print(fifoData[i].y, 2);
-                Serial.print("\t\t");
+                Serial.print(fifoData[i].y, 3);
+                Serial.print("\t");
                 Serial.print("Z: ");
-                Serial.print(fifoData[i].z, 2);
+                Serial.println(fifoData[i].z, 3);
             }
         }
         else

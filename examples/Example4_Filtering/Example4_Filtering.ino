@@ -104,15 +104,16 @@ void loop()
     if(err == BMA400_OK)
     {
         // Acquisistion succeeded, print acceleration data
-        Serial.print("Acceleration in g's - ");
-        Serial.print("X: ");
-        Serial.print(data.x, 2);
-        Serial.print("\t\t");
-        Serial.print("Y: ");
-        Serial.print(data.y, 2);
-        Serial.print("\t\t");
-        Serial.print("Z: ");
-        Serial.print(data.z, 2);
+        // Serial.print("Acceleration in g's");
+        // Serial.print("\t");
+        // Serial.print("X: ");
+        // Serial.print(data.x, 3);
+        // Serial.print("\t");
+        // Serial.print("Y: ");
+        Serial.println(data.y * 1000, 3);
+        // Serial.print("\t");
+        // Serial.print("Z: ");
+        // Serial.println(data.z, 3);
     }
     else
     {
