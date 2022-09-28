@@ -309,7 +309,7 @@ int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
     return BMA400_OK;
 }
 
-void BMA400::convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, bool bitWidth)
+void BMA400::convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, uint8_t bitWidth)
 {
     // Convert range setting to g-range. This computation is shorthand for the
     // following settings:
@@ -319,7 +319,7 @@ void BMA400::convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data
     // BMA400_RANGE_4G  | 4
     // BMA400_RANGE_8G  | 8
     // BMA400_RANGE_16G | 16
-    uint8_t gRange = 2 << (range + 1);
+    uint8_t gRange = 2 << range;
 
     // Convert xyz data from raw to g's. Raw data are 12/8-bit signed integers,
     // where the maximum raw value corresponds to the max of the range setting

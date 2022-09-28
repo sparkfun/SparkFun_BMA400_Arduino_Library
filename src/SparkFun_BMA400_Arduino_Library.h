@@ -129,7 +129,7 @@ class BMA400
         int8_t getAccelParam(BMA400_AccelParam param, uint8_t* val);
 
         // Convert from raw data (bma400_sensor_data) to g's (BMA400_SensorData)
-        void convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, bool bitWidth = 12);
+        void convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, uint8_t bitWidth = 12);
 
         uint16_t numFIFODataToBytes(uint8_t fifoFlags, uint16_t numData);
 
