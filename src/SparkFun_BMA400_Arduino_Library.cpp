@@ -454,103 +454,21 @@ int8_t BMA400::setWakeupInterrupt(bma400_wakeup_conf* config)
     return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
-int8_t BMA400::setFIFOConfigFlags(uint8_t flags)
+int8_t BMA400::setFIFOConfig(bma400_fifo_conf* config)
 {
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
 
-    // Get current FIFO config
-    struct bma400_device_conf config =
-    {
-        .type = BMA400_FIFO_CONF,
-        .param = {0}
-    };
-    err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
-
-    // Change config flags as requested
-    config.param.fifo_conf.conf_regs = flags;
-    config.param.fifo_conf.conf_status = BMA400_ENABLE; // This forces flags to be overwritten
-    return bma400_set_device_conf(&config, 1, &sensor);
-}
-
-int8_t BMA400::setFIFOWatermark(uint16_t numData)
-{
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
+    // Convert watermark from number of measurements to number of bytes
+    (*config).fifo_watermark *= bytesPerFIFOData((*config).conf_regs);
 
     // Get current FIFO config
-    struct bma400_device_conf config =
+    struct bma400_device_conf deviceConfig =
     {
         .type = BMA400_FIFO_CONF,
-        .param = {0}
+        .param = {.fifo_conf = *config}
     };
-    err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
-
-    // Compute the total number of bytes for this watermark level
-    uint16_t watermarkBytes = numFIFODataToBytes(config.param.fifo_conf.conf_regs, numData);
-
-    // Check whether this exceeds the FIFO buffer's size (1KB)
-    if(watermarkBytes > 1024)
-    {
-        // Too many bytes, can't se watermark level
-        return BMA400_E_INVALID_SETTING;
-    }
-
-    // Set watermark
-    config.param.fifo_conf.fifo_watermark = watermarkBytes;
-    return bma400_set_device_conf(&config, 1, &sensor);
-}
-
-int8_t BMA400::setFIFOFullInterruptChannel(bma400_int_chan channel)
-{
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
-    // Get current FIFO config
-    struct bma400_device_conf config =
-    {
-        .type = BMA400_FIFO_CONF,
-        .param = {0}
-    };
-    err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
-
-    // Change config flags as requested
-    config.param.fifo_conf.fifo_full_channel = channel;
-    return bma400_set_device_conf(&config, 1, &sensor);
-}
-
-int8_t BMA400::setFIFOWatermarkInterruptChannel(bma400_int_chan channel)
-{
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
-    // Get current FIFO config
-    struct bma400_device_conf config =
-    {
-        .type = BMA400_FIFO_CONF,
-        .param = {0}
-    };
-    err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
-
-    // Change config flags as requested
-    config.param.fifo_conf.fifo_full_channel = channel;
-    return bma400_set_device_conf(&config, 1, &sensor);
+    return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
 int8_t BMA400::getFIFOLength(uint16_t* numData)
@@ -567,7 +485,22 @@ int8_t BMA400::getFIFOLength(uint16_t* numData)
         return err;
     }
 
-    *numData = ((uint16_t) data[1] << 8) | data[0];
+    uint16_t numBytes = ((uint16_t) data[1] << 8) | data[0];
+
+    // Get current FIFO config
+    struct bma400_device_conf config =
+    {
+        .type = BMA400_FIFO_CONF,
+        .param = {0}
+    };
+    err = bma400_get_device_conf(&config, 1, &sensor);
+    if(err != BMA400_OK)
+    {
+        return err;
+    }
+
+    // Compute the total number of bytes for this watermark level
+    *numData = numBytes / bytesPerFIFOData(config.param.fifo_conf.conf_regs);
 
     return BMA400_OK;
 }
@@ -593,7 +526,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     uint8_t flags = config.param.fifo_conf.conf_regs;
 
     // Compute number of bytes that need to be read out from FIFO
-    uint16_t numBytes = numFIFODataToBytes(flags, *numData);
+    uint16_t numBytes = *numData * bytesPerFIFOData(flags);
 
     // Determine whether sensor time is enabled
     if((flags & BMA400_FIFO_TIME_EN) != 0)
@@ -656,7 +589,7 @@ int8_t BMA400::flushFIFO()
     return bma400_set_fifo_flush(&sensor);
 }
 
-uint16_t BMA400::numFIFODataToBytes(uint8_t fifoFlags, uint16_t numData)
+uint8_t BMA400::bytesPerFIFOData(uint8_t fifoFlags)
 {
     // Determine how many axes are being stored in the FIFO buffer
     uint8_t numAxes = ((fifoFlags & BMA400_FIFO_X_EN) != 0)
@@ -668,10 +601,7 @@ uint16_t BMA400::numFIFODataToBytes(uint8_t fifoFlags, uint16_t numData)
 
     // Compute the total number of bytes per data frame. Data frames include 1
     // header byte, plus 1 or 2 bytes per axis
-    uint8_t bytesPerMeasurement = 1 + (numAxes * bytesPerAxis);
-
-    // Compute total number fo bytes for all data frames
-    return bytesPerMeasurement * numData;
+    return 1 + (numAxes * bytesPerAxis);
 }
 
 BMA400_INTF_RET_TYPE BMA400::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)

@@ -15,7 +15,7 @@ int interruptPin = 2;
 volatile bool interruptOccurred = false;
 
 // Create a buffer for FIFO data
-const uint16_t numSamples = 25;
+const uint16_t numSamples = 15;
 BMA400_SensorData fifoData[numSamples];
 
 // Track FIFO length to give progress updates
@@ -56,8 +56,10 @@ void setup()
         Serial.println(err);
     }
 
-    // Here we set the configuration flags for the FIFO buffer. The following
-    // flags are available:
+    // Here we set the config parameters for the FIFO buffer. There are several
+    // flags that we can set, which are listed below. Additionally, we can set
+    // the watermark level, and choose where to route the interrupt conditions.
+    // conf_regs flags:
     // BMA400_FIFO_AUTO_FLUSH   - Flush FIFO when power mode changes
     // BMA400_FIFO_STOP_ON_FULL - Stop storing data when FIFO is full
     // BMA400_FIFO_TIME_EN      - Log sensor time when FIFO is read out
@@ -66,31 +68,19 @@ void setup()
     // BMA400_FIFO_X_EN         - Store x-axis data
     // BMA400_FIFO_Y_EN         - Store y-axis data
     // BMA400_FIFO_Z_EN         - Store z-axis data
-    uint8_t flags = BMA400_FIFO_X_EN | BMA400_FIFO_Y_EN | BMA400_FIFO_Z_EN;
-    err = accelerometer.setFIFOConfigFlags(flags);
+    bma400_fifo_conf config = 
+    {
+        .conf_regs = BMA400_FIFO_X_EN | BMA400_FIFO_Y_EN | BMA400_FIFO_Z_EN,
+        .conf_status = BMA400_ENABLE,
+        .fifo_watermark = numSamples,
+        .fifo_full_channel = BMA400_UNMAP_INT_PIN,
+        .fifo_wm_channel = BMA400_INT_CHANNEL_1
+    };
+    err = accelerometer.setFIFOConfig(&config);
     if(err != BMA400_OK)
     {
         // FIFO config flags failed, most likely a communication error (code -2)
         Serial.print("FIFO config flags failed! Error code: ");
-        Serial.println(err);
-    }
-    
-    // Set watermark level to trigger an interrupt after numSamples measurements
-    err = accelerometer.setFIFOWatermark(numSamples);
-    if(err != BMA400_OK)
-    {
-        // Watermark failed, most likely a communication error (code -2)
-        Serial.print("Watermark failed! Error code: ");
-        Serial.println(err);
-    }
-
-    // The BMA400 has 2 interrupt pins. All interrupt conditions can be mapped
-    // to either pin, so we'll just choose the first one for this example
-    err = accelerometer.setFIFOWatermarkInterruptChannel(BMA400_INT_CHANNEL_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt channel failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
         Serial.println(err);
     }
 

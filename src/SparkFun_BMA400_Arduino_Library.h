@@ -110,10 +110,7 @@ class BMA400
         int8_t setWakeupInterrupt(bma400_wakeup_conf* config);
 
         // FIFO control
-        int8_t setFIFOConfigFlags(uint8_t flags);
-        int8_t setFIFOWatermark(uint16_t numData);
-        int8_t setFIFOFullInterruptChannel(bma400_int_chan channel);
-        int8_t setFIFOWatermarkInterruptChannel(bma400_int_chan channel);
+        int8_t setFIFOConfig(bma400_fifo_conf* config);
         int8_t getFIFOLength(uint16_t* numData);
         int8_t getFIFOData(BMA400_SensorData* data, uint16_t* numData);
         int8_t flushFIFO();
@@ -131,7 +128,7 @@ class BMA400
         // Convert from raw data (bma400_sensor_data) to g's (BMA400_SensorData)
         void convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, uint8_t bitWidth = 12);
 
-        uint16_t numFIFODataToBytes(uint8_t fifoFlags, uint16_t numData);
+        // Compute number of bytes per FIFO data frame
 
         // Read/write helper functions
         static BMA400_INTF_RET_TYPE readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr);
