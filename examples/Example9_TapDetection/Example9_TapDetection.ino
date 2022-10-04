@@ -39,17 +39,36 @@ void setup()
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
 
+    // The tap detection requires a 200Hz ODR (default)
+    err = accelerometer.setODR(BMA400_ODR_200HZ);
+    if(err != BMA400_OK)
+    {
+        // ODR setting failed, most likely a communication error (code -2)
+        Serial.print("ODR setting failed! Error code: ");
+        Serial.println(err);
+    }
+
+    // Increasing the range from the default of 4g to the max of 16g helps
+    // capture the large acceleration spikes caused by tapping
+    err = accelerometer.setRange(BMA400_RANGE_16G);
+    if(err != BMA400_OK)
+    {
+        // Range setting failed, most likely a communication error (code -2)
+        Serial.print("Range setting failed! Error code: ");
+        Serial.println(err);
+    }
+
     // Here we configure the tap detection feature of the BMA400. It can detect
     // both single and double taps as a form of user input. There are a number
     // of parameters than can be configured to help distinguish taps from other
     // sources of noise.
     bma400_tap_conf config =
     {
-        .axes_sel = BMA400_AXIS_Z_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .sensitivity = BMA400_TAP_SENSITIVITY_3, // Sensitivity threshold, up to 7
-        .tics_th = BMA400_TICS_TH_12_DATA_SAMPLES, // Max time between top/bottom peaks of a single tap (helps with noise rejection)
-        .quiet = BMA400_QUIET_60_DATA_SAMPLES, // Threshold time between taps to register as single or double taps
-        .quiet_dt = BMA400_QUIET_DT_4_DATA_SAMPLES, // Minimum time between 2 taps (helps with noise rejection)
+        .axes_sel = BMA400_TAP_Z_AXIS_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
+        .sensitivity = BMA400_TAP_SENSITIVITY_0, // Sensitivity threshold, up to 7 (lower is more sensitive)
+        .tics_th = BMA400_TICS_TH_18_DATA_SAMPLES, // Max time between top/bottom peaks of a single tap
+        .quiet = BMA400_QUIET_60_DATA_SAMPLES, // Minimum time between taps to trigger interrupt
+        .quiet_dt = BMA400_QUIET_DT_4_DATA_SAMPLES, // Minimum time between 2 taps to trigger double tap interrupt
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
     err = accelerometer.setTapInterrupt(&config);
