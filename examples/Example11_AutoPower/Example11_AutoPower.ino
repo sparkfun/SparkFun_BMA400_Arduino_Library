@@ -224,8 +224,8 @@ void logAccelData()
             return;
         }
 
-        // Print 10x per second
-        delay(100);
+        // Print 50x per second
+        delay(20);
 
         // Check whether sensor returned to low power mode
         err = accelerometer.getMode(&powerMode);

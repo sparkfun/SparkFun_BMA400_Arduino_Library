@@ -59,6 +59,6 @@ void loop()
         Serial.println(err);
     }
 
-    // Print 10x per second
-    delay(100);
+    // Print 50x per second
+    delay(20);
 }
