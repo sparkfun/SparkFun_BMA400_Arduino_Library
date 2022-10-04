@@ -40,12 +40,16 @@ void setup()
     int8_t err = BMA400_OK;
 
     // Here we configure the activity change detection feature of the BMA400.
+    // This evaluates the acceleration data over a certain period defined by
+    // act_ch_ntps, and triggers an interrupt if one period is significantly
+    // different from the previous period. The threshold for this difference is
+    // set by act_ch_thres. See datasheet for more details.
     bma400_act_ch_conf config =
     {
         .act_ch_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .data_source = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (datasheet recommends filter 2)
-        .act_ch_ntps = BMA400_ACT_CH_SAMPLE_CNT_128, // How many measurements to evaluate
+        .data_source = BMA400_DATA_SRC_ACC_FILT1, // Which data source to use
+        .act_ch_ntps = BMA400_ACT_CH_SAMPLE_CNT_64, // Measurement period (also depends on ODR)
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
     err = accelerometer.setActivityChangeInterrupt(&config);
