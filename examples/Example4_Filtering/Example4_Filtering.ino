@@ -56,10 +56,10 @@ void setup()
 
     // The BMA400 has 2 built-in filters that the raw data passes through.
     // Filter 2 is the only source for the interrupt engine, and its parameters
-    // are fixed at 100Hz ODR and 48Hz bandwidth, so it's best to use filter 1
-    // for measurements. It's also possible to use the dedicated low-pass filter
-    // by passing BMA400_DATA_SRC_ACCEL_FILT_LP, however its parameters are
-    // fixed at 100Hz ODR and 1Hz bandwidth
+    // are fixed at 100Hz ODR and 48Hz bandwidth, so it's best to use filter 1.
+    // It's also possible to use the dedicated low-pass filter by passing
+    // BMA400_DATA_SRC_ACCEL_FILT_LP, however its parameters are fixed at 100Hz
+    // ODR and 1Hz bandwidth
     err = accelerometer.setDataSource(BMA400_DATA_SRC_ACCEL_FILT_1);
     if(err != BMA400_OK)
     {
@@ -82,9 +82,8 @@ void setup()
 
     // Since the filter bandwidth depends on the ODR (output data rate), we can
     // achieve smaller bandwidths by reducing the ODR from the default of 200Hz.
-    // If we choose the minimum ODR of 12.5Hz with the bandwidth set to 0.24, we
-    // achieve a bandwidth of 3Hz. Lowering the ODR also reduces the sensor
-    // noise even without any filtering
+    // If we instead choose 50Hz with the bandwidth set to 0.24, we achieve a
+    // bandwidth of 12Hz. Lowering the ODR also reduces the inherent sensor noise
     err = accelerometer.setODR(BMA400_ODR_50HZ);
     if(err != BMA400_OK)
     {
