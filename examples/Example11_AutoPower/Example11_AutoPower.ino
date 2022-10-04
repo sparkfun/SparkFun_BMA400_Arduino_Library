@@ -40,7 +40,8 @@ void setup()
     int8_t err = BMA400_OK;
 
     // We'll start the sensor off in low power mode while we set the automatic
-    // power transition settings
+    // power transition settings. Note that low power is different from sleep,
+    // the sensor is still taking measurements in this mode!
     err = accelerometer.setMode(BMA400_MODE_LOW_POWER);
     if(err != BMA400_OK)
     {
@@ -54,10 +55,10 @@ void setup()
     // trigger an interrupt, allowing us to start logging acceleration data
     bma400_wakeup_conf wakeupConfig =
     {
-        .wakeup_ref_update = BMA400_UPDATE_EVERY_TIME, // Whether to automatically update reference values
+        .wakeup_ref_update = BMA400_UPDATE_ONE_TIME, // Whether to automatically update reference values
         .sample_count = BMA400_SAMPLE_COUNT_1, // Number of samples that exceed threshold to wakeup, up to 8
         .wakeup_axes_en = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
-        .int_wkup_threshold = 16, // Upper 8 bits of acceleration (at 4g range (default), 16 = 0.25g)
+        .int_wkup_threshold = 4, // Upper 8 bits of acceleration (at 4g range (default), 4 = 0.0625g)
         .int_wkup_ref_x = 0, // Upper 8 bits of acceleration
         .int_wkup_ref_y = 0, // Upper 8 bits of acceleration
         .int_wkup_ref_z = 64, // Upper 8 bits of acceleration (at 4g range (default), 64 = 1g)
@@ -92,14 +93,14 @@ void setup()
     // timer while motion is detected
     bma400_gen_int_conf config =
     {
-        .gen_int_thres = 10, // 8mg resolution (eg. gen_int_thres=10 results in 80mg)
-        .gen_int_dur = 100, // 10ms resolution (eg. gen_int_dur=100 results in 1s)
+        .gen_int_thres = 5, // 8mg resolution (eg. gen_int_thres=10 results in 40mg)
+        .gen_int_dur = 1, // 10ms resolution (eg. gen_int_dur=1 results in 10ms)
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
         .data_src = BMA400_DATA_SRC_ACCEL_FILT_2, // Which filter to use (must be 100Hz, datasheet recommends filter 2)
         .criterion_sel = BMA400_ACTIVITY_INT, // Trigger interrupts when active or inactive
         .evaluate_axes = BMA400_ANY_AXES_INT, // How to combine axes for interrupt condition (OR/AND)
         .ref_update = BMA400_UPDATE_EVERY_TIME, // Whether to automatically update reference values
-        .hysteresis = BMA400_HYST_96_MG, // Hysteresis acceleration for noise rejection
+        .hysteresis = BMA400_HYST_48_MG, // Hysteresis acceleration for noise rejection
         .int_thres_ref_x = 0, // Raw 12-bit acceleration value
         .int_thres_ref_y = 0, // Raw 12-bit acceleration value
         .int_thres_ref_z = 512, // Raw 12-bit acceleration value (at 4g range (default), 512 = 1g)
@@ -228,7 +229,7 @@ void logAccelData()
 
         // Check whether sensor returned to low power mode
         err = accelerometer.getMode(&powerMode);
-        if(err == BMA400_OK)
+        if(err != BMA400_OK)
         {
             // Get mode failed, most likely a communication error (code -2)
             Serial.print("Error getting power mode! Error code: ");
@@ -239,7 +240,8 @@ void logAccelData()
             return;
         }
     }
-    
+
+    Serial.println("Returning to low power mode");
 }
 
 void bma400InterruptHandler()
