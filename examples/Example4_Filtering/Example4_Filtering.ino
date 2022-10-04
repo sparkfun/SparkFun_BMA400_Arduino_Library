@@ -85,7 +85,7 @@ void setup()
     // If we choose the minimum ODR of 12.5Hz with the bandwidth set to 0.24, we
     // achieve a bandwidth of 3Hz. Lowering the ODR also reduces the sensor
     // noise even without any filtering
-    err = accelerometer.setODR(BMA400_ODR_12_5HZ);
+    err = accelerometer.setODR(BMA400_ODR_50HZ);
     if(err != BMA400_OK)
     {
         // ODR setting failed, most likely a communication error (code -2)
@@ -104,16 +104,16 @@ void loop()
     if(err == BMA400_OK)
     {
         // Acquisistion succeeded, print acceleration data
-        // Serial.print("Acceleration in g's");
-        // Serial.print("\t");
-        // Serial.print("X: ");
-        // Serial.print(data.x, 3);
-        // Serial.print("\t");
-        // Serial.print("Y: ");
-        Serial.println(data.y * 1000, 3);
-        // Serial.print("\t");
-        // Serial.print("Z: ");
-        // Serial.println(data.z, 3);
+        Serial.print("Acceleration in g's");
+        Serial.print("\t");
+        Serial.print("X: ");
+        Serial.print(data.x, 3);
+        Serial.print("\t");
+        Serial.print("Y: ");
+        Serial.print(data.y, 3);
+        Serial.print("\t");
+        Serial.print("Z: ");
+        Serial.println(data.z, 3);
     }
     else
     {
@@ -123,5 +123,5 @@ void loop()
     }
 
     // Print 10x per second
-    delay(100);
+    delay(20);
 }
