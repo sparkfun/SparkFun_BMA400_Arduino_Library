@@ -51,9 +51,9 @@ void setup()
         .axes_sel = BMA400_AXIS_XYZ_EN, // Which axes to evaluate for interrupts (X/Y/Z in any combination)
         .data_src = BMA400_DATA_SRC_ACCEL_FILT_LP, // Which filter to use (must be either filt2 or filt_lp)
         .ref_update = BMA400_UPDATE_LP_EVERY_TIME, // Whether to automatically update reference values
-        .orient_thres = 25, // 8mg resolution (eg. orient_thres=25 results in 200mg)
+        .orient_thres = 50, // 8mg resolution (eg. orient_thres=50 results in 400mg)
         .stability_thres = 10, // 8mg resolution (eg. stability_thres=20 results in 80mg)
-        .orient_int_dur = 30, // 10ms resolution (eg. gen_int_dur=30 results in 300ms)
+        .orient_int_dur = 50, // 10ms resolution (eg. gen_int_dur=50 results in 500ms)
         .orient_ref_x = 0, // Raw 12-bit acceleration value
         .orient_ref_y = 0, // Raw 12-bit acceleration value
         .orient_ref_z = 512, // Raw 12-bit acceleration value (at 4g range (default), 512 = 1g)
