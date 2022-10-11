@@ -429,7 +429,7 @@ int8_t BMA400::setStepCounterInterrupt(bma400_step_int_conf* config)
     bma400_sensor_conf sensorConfig =
     {
         .type = BMA400_STEP_COUNTER_INT,
-        .param {.step_cnt = *config}
+        .param = {.step_cnt = *config}
     };
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
