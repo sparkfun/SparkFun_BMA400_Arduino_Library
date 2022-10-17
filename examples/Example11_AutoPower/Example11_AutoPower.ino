@@ -195,8 +195,8 @@ void logAccelData()
     while (powerMode == BMA400_MODE_NORMAL)
     {
         // Get measurements from the sensor
-        BMA400_SensorData data = {0};
-        int8_t err = accelerometer.getSensorData(&data);
+        BMA400_SensorData data;
+        err = accelerometer.getSensorData(&data);
 
         // Check whether data was acquired successfully
         if(err == BMA400_OK)

@@ -109,11 +109,8 @@ int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
     int8_t err = BMA400_OK;
 
     // Get current accel config so we don't accidentally change anything
-    bma400_sensor_conf config =
-    {
-        .type = BMA400_ACCEL,
-        .param = {0}
-    };
+    bma400_sensor_conf config;
+    config.type = BMA400_ACCEL;
     err = bma400_get_sensor_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
     {
@@ -166,11 +163,8 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
     int8_t err = BMA400_OK;
 
     // Get current accel config
-    bma400_sensor_conf config =
-    {
-        .type = BMA400_ACCEL,
-        .param = {0}
-    };
+    bma400_sensor_conf config;
+    config.type = BMA400_ACCEL;
     err = bma400_get_sensor_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
     {
@@ -288,7 +282,7 @@ int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
     uint8_t dataSel = sensorTime ? BMA400_DATA_SENSOR_TIME : BMA400_DATA_ONLY;
 
     // Get raw data from sensor
-    bma400_sensor_data rawData = {0};
+    bma400_sensor_data rawData;
     err = bma400_get_accel_data(dataSel, &rawData, &sensor);
     if(err != BMA400_OK)
     {
@@ -369,7 +363,7 @@ int8_t BMA400::enableInterrupt(bma400_int_type intType, bool enable)
     bma400_int_enable config =
     {
         .type = intType,
-        .conf = enable ? BMA400_ENABLE : BMA400_DISABLE
+        .conf = (uint8_t) (enable ? BMA400_ENABLE : BMA400_DISABLE)
     };
     return bma400_enable_interrupt(&config, 1, &sensor);
 }
@@ -456,9 +450,6 @@ int8_t BMA400::setWakeupInterrupt(bma400_wakeup_conf* config)
 
 int8_t BMA400::setFIFOConfig(bma400_fifo_conf* config)
 {
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // Convert watermark from number of measurements to number of bytes
     (*config).fifo_watermark *= bytesPerFIFOData((*config).conf_regs);
 
@@ -488,11 +479,8 @@ int8_t BMA400::getFIFOLength(uint16_t* numData)
     uint16_t numBytes = ((uint16_t) data[1] << 8) | data[0];
 
     // Get current FIFO config
-    struct bma400_device_conf config =
-    {
-        .type = BMA400_FIFO_CONF,
-        .param = {0}
-    };
+    struct bma400_device_conf config;
+    config.type = BMA400_FIFO_CONF;
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
     {
@@ -511,11 +499,8 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     int8_t err = BMA400_OK;
 
     // Get current FIFO config
-    struct bma400_device_conf config =
-    {
-        .type = BMA400_FIFO_CONF,
-        .param = {0}
-    };
+    struct bma400_device_conf config;
+    config.type = BMA400_FIFO_CONF;
     err = bma400_get_device_conf(&config, 1, &sensor);
     if(err != BMA400_OK)
     {
@@ -543,7 +528,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     uint8_t byteBuffer[numBytes];
 
     // Get raw data from FIFO buffer
-    bma400_fifo_data fifoData = {0};
+    bma400_fifo_data fifoData;
     fifoData.data = byteBuffer;
     fifoData.length = numBytes;
     err = bma400_get_fifo_data(&fifoData, &sensor);

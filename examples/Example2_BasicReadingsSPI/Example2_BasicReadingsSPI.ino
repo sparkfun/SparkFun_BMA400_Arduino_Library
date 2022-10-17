@@ -34,7 +34,7 @@ void setup()
 void loop()
 {
     // Get measurements from the sensor
-    BMA400_SensorData data = {0};
+    BMA400_SensorData data;
     int8_t err = accelerometer.getSensorData(&data);
 
     // Check whether data was acquired successfully
