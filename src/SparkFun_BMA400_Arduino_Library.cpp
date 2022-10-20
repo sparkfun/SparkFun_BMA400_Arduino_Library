@@ -514,7 +514,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     uint16_t numBytes = *numData * bytesPerFIFOData(flags);
 
     // Determine whether sensor time is enabled
-    if((flags & BMA400_FIFO_TIME_EN) != 0)
+    if(flags & BMA400_FIFO_TIME_EN)
     {
         // Sensor time is enabled, so one extra time frame will be output after
         // all data frames are read. If the buffer already has lots of data,
@@ -603,41 +603,55 @@ BMA400_INTF_RET_TYPE BMA400::readRegisters(uint8_t regAddress, uint8_t* dataBuff
     switch(interfaceData->interface)
     {
         case BMA400_I2C_INTF:
-            // Jump to desired register address
-            interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
-            interfaceData->i2cPort->write(regAddress);
-            if(interfaceData->i2cPort->endTransmission())
-            {
-                return BMA400_E_COM_FAIL;
-            }
-
-            // Read bytes from these registers
-            interfaceData->i2cPort->requestFrom(interfaceData->i2cAddress, numBytes);
-
-            // Store all requested bytes
-            for(uint32_t i = 0; i < numBytes && interfaceData->i2cPort->available(); i++)
-            {
-                dataBuffer[i] = interfaceData->i2cPort->read();
-            }
+            return readRegistersI2C(regAddress, dataBuffer, numBytes, interfaceData);
             break;
-
         case BMA400_SPI_INTF:
-            // Start transmission
-            SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
-            digitalWrite(interfaceData->spiCSPin, LOW);
-            SPI.transfer(regAddress | 0x80);
-
-            // Read all requested bytes
-            for(uint32_t i = 0; i < numBytes; i++)
-            {
-                dataBuffer[i] = SPI.transfer(0);;
-            }
-
-            // End transmission
-            digitalWrite(interfaceData->spiCSPin, HIGH);
-            SPI.endTransaction();
+            return readRegistersSPI(regAddress, dataBuffer, numBytes, interfaceData);
+            break;
+        default:
+            return BMA400_E_INVALID_CONFIG;
             break;
     }
+}
+
+BMA400_INTF_RET_TYPE BMA400::readRegistersI2C(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
+{
+    // Jump to desired register address
+    interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
+    interfaceData->i2cPort->write(regAddress);
+    if(interfaceData->i2cPort->endTransmission())
+    {
+        return BMA400_E_COM_FAIL;
+    }
+
+    // Read bytes from these registers
+    interfaceData->i2cPort->requestFrom(interfaceData->i2cAddress, numBytes);
+
+    // Store all requested bytes
+    for(uint32_t i = 0; i < numBytes && interfaceData->i2cPort->available(); i++)
+    {
+        dataBuffer[i] = interfaceData->i2cPort->read();
+    }
+
+    return BMA400_OK;
+}
+
+BMA400_INTF_RET_TYPE BMA400::readRegistersSPI(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
+{
+    // Start transmission
+    SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
+    digitalWrite(interfaceData->spiCSPin, LOW);
+    SPI.transfer(regAddress | 0x80);
+
+    // Read all requested bytes
+    for(uint32_t i = 0; i < numBytes; i++)
+    {
+        dataBuffer[i] = SPI.transfer(0);
+    }
+
+    // End transmission
+    digitalWrite(interfaceData->spiCSPin, HIGH);
+    SPI.endTransaction();
 
     return BMA400_OK;
 }
@@ -656,44 +670,58 @@ BMA400_INTF_RET_TYPE BMA400::writeRegisters(uint8_t regAddress, const uint8_t* d
     switch(interfaceData->interface)
     {
         case BMA400_I2C_INTF:
-            // Begin transmission
-            interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
-
-            // Write the address
-            interfaceData->i2cPort->write(regAddress);
-            
-            // Write all the data
-            for(uint32_t i = 0; i < numBytes; i++)
-            {
-                interfaceData->i2cPort->write(dataBuffer[i]);
-            }
-
-            // End transmission
-            if(interfaceData->i2cPort->endTransmission())
-            {
-                return BMA400_E_COM_FAIL;
-            }
+            return writeRegistersI2C(regAddress, dataBuffer, numBytes, interfaceData);
             break;
-
         case BMA400_SPI_INTF:
-            // Begin transmission
-            SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
-            digitalWrite(interfaceData->spiCSPin, LOW);
-            
-            // Write the address
-            SPI.transfer(regAddress);
-            
-            // Write all the data
-            for(uint32_t i = 0; i < numBytes; i++)
-            {
-                SPI.transfer(dataBuffer[i]);
-            }
-
-            // End transmission
-            digitalWrite(interfaceData->spiCSPin, HIGH);
-            SPI.endTransaction();
+            return writeRegistersSPI(regAddress, dataBuffer, numBytes, interfaceData);
+            break;
+        default:
+            return BMA400_E_INVALID_CONFIG;
             break;
     }
+}
+
+BMA400_INTF_RET_TYPE BMA400::writeRegistersI2C(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
+{
+    // Begin transmission
+    interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
+
+    // Write the address
+    interfaceData->i2cPort->write(regAddress);
+    
+    // Write all the data
+    for(uint32_t i = 0; i < numBytes; i++)
+    {
+        interfaceData->i2cPort->write(dataBuffer[i]);
+    }
+
+    // End transmission
+    if(interfaceData->i2cPort->endTransmission())
+    {
+        return BMA400_E_COM_FAIL;
+    }
+
+    return BMA400_OK;
+}
+
+BMA400_INTF_RET_TYPE BMA400::writeRegistersSPI(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
+{
+    // Begin transmission
+    SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
+    digitalWrite(interfaceData->spiCSPin, LOW);
+    
+    // Write the address
+    SPI.transfer(regAddress);
+    
+    // Write all the data
+    for(uint32_t i = 0; i < numBytes; i++)
+    {
+        SPI.transfer(dataBuffer[i]);
+    }
+
+    // End transmission
+    digitalWrite(interfaceData->spiCSPin, HIGH);
+    SPI.endTransaction();
 
     return BMA400_OK;
 }

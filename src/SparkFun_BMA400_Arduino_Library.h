@@ -20,8 +20,8 @@
 #define BMA400_AXIS_YZ_EN (BMA400_AXIS_Y_EN | BMA400_AXIS_Z_EN)
 
 // The BMA400's sensor time register increments at 25.6kHz
-// Note - the last 3 bits of the sensor time registers will always be 0, so the
-// resolution is effectively 3.2kHz
+// Note - the last 3 bits of the sensor time registers will always be 0, so it
+// actually increments at 3.2kHz
 #define BMA400_TICKS_PER_SECOND 25600
 
 // Struct to hold data about the communication interface being used (I2C or SPI)
@@ -79,20 +79,34 @@ class BMA400
         int8_t setAutoWakeup(bma400_auto_wakeup_conf* config);
         int8_t setAutoLowPower(bma400_auto_lp_conf* config);
 
-        // Configuration control
+        // Range control
         int8_t setRange(uint8_t range);
         int8_t getRange(uint8_t* range);
+
+        // Output data rate (ODR) control
         int8_t setODR(uint8_t odr);
         int8_t getODR(uint8_t* odr);
+
+        // Oversampling rate (OSR) control
         int8_t setOSR(uint8_t osr);
         int8_t getOSR(uint8_t* osr);
+
+        // Oversampling rate low power (ODSRLP) control
         int8_t setOSRLP(uint8_t osrLP);
         int8_t getOSRLP(uint8_t* osrLP);
+
+        // Data source selection
         int8_t setDataSource(uint8_t source);
         int8_t getDataSource(uint8_t* source);
+
+        // Filter 1 bandwisth selection
         int8_t setFilter1Bandwidth(uint8_t bw);
         int8_t getFilter1Bandwidth(uint8_t* bw);
+
+        // Step count acquisition
         int8_t getStepCount(uint32_t* count, uint8_t* activityType);
+
+        // Self test feature to ensure sensor is functional
         int8_t selfTest();
 
         // Data acquisistion
@@ -138,7 +152,11 @@ class BMA400
 
         // Read/write helper functions
         static BMA400_INTF_RET_TYPE readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr);
+        static BMA400_INTF_RET_TYPE readRegistersI2C(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData);
+        static BMA400_INTF_RET_TYPE readRegistersSPI(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData);
         static BMA400_INTF_RET_TYPE writeRegisters(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr);
+        static BMA400_INTF_RET_TYPE writeRegistersI2C(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData);
+        static BMA400_INTF_RET_TYPE writeRegistersSPI(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData);
 
         // Deley helper function
         static void usDelay(uint32_t period, void* interfacePtr);
@@ -150,4 +168,4 @@ class BMA400
         BMA400_InterfaceData interfaceData;
 };
 
-#endif
+#endif /*__SPARKFUN_BMA400_H__*/
