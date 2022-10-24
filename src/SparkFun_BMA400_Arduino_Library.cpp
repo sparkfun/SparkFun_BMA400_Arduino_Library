@@ -1,10 +1,16 @@
 #include "SparkFun_BMA400_Arduino_Library.h"
 
+/// @brief Default constructor
 BMA400::BMA400()
 {
     // Nothing to do
 }
 
+/// @brief Begin communication with the sensor over I2C, initialize it, and set
+/// default config parameters
+/// @param address I2C address of sensor
+/// @param wirePort I2C port to use for communication, defaults to Wire
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
 {
     // Check whether address is valid option
@@ -26,6 +32,11 @@ int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
     return begin();
 }
 
+/// @brief Begin communication with the sensor over SPI, initialize it, and set
+/// default config parameters
+/// @param csPin Chip select pin of sensor
+/// @param clockFrequency SPI clock frequency
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency)
 {
     // Set up chip select pin
@@ -44,6 +55,9 @@ int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency)
     return begin();
 }
 
+/// @brief Checks whether sensor is connected, sends soft reset command,
+/// initializes sensor, then sets default config parameters
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::begin()
 {
     // Variable to track errors returned by API calls
@@ -73,16 +87,31 @@ int8_t BMA400::begin()
     return setMode(BMA400_MODE_NORMAL);
 }
 
+/// @brief Sets power mode of sensor
+/// @param mode Sensor power mode. Assignable values are:
+///     BMA400_MODE_NORMAL
+///     BMA400_MODE_SLEEP
+///     BMA400_MODE_LOW_POWER
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setMode(uint8_t mode)
 {
     return bma400_set_power_mode(mode, &sensor);
 }
 
+/// @brief Gets power mode of sensor
+/// @param mode Sensor power mode. Will be set to one of the following:
+///     BMA400_MODE_NORMAL
+///     BMA400_MODE_SLEEP
+///     BMA400_MODE_LOW_POWER
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getMode(uint8_t* mode)
 {
     return bma400_get_power_mode(mode, &sensor);
 }
 
+/// @brief Sets auto wakeup config of sensor
+/// @param config Auto wakeup config struct, see bma400_auto_wakeup_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setAutoWakeup(bma400_auto_wakeup_conf* config)
 {
     bma400_device_conf deviceConfig =
@@ -93,6 +122,9 @@ int8_t BMA400::setAutoWakeup(bma400_auto_wakeup_conf* config)
     return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
+/// @brief Sets auto low power config of sensor
+/// @param config Auto low power config struct, see bma400_auto_lp_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setAutoLowPower(bma400_auto_lp_conf* config)
 {
     bma400_device_conf deviceConfig =
@@ -103,6 +135,10 @@ int8_t BMA400::setAutoLowPower(bma400_auto_lp_conf* config)
     return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
+/// @brief Sets just one parameter of bma400_sensor_conf
+/// @param param Parameter to set, see BMA400_AccelParam
+/// @param val Value assigned to that parameter
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
 {
     // Variable to track errors returned by API calls
@@ -157,6 +193,10 @@ int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
     return bma400_set_sensor_conf(&config, 1, &sensor);
 }
 
+/// @brief Gets just one parameter of bma400_sensor_conf
+/// @param param Parameter to get, see BMA400_AccelParam
+/// @param val Value assigned to that parameter
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
 {
     // Variable to track errors returned by API calls
@@ -203,76 +243,178 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
     return BMA400_OK;
 }
 
+/// @brief Sets measurement range
+/// @param range Sensor range, assignable values are:
+///     BMA400_RANGE_2G
+///     BMA400_RANGE_4G
+///     BMA400_RANGE_8G
+///     BMA400_RANGE_16G
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setRange(uint8_t range)
 {
     return setAccelParam(BMA400_RANGE, range);
 }
 
+/// @brief Gets measurement range
+/// @param range Sensor range, assignable values are:
+///     BMA400_RANGE_2G
+///     BMA400_RANGE_4G
+///     BMA400_RANGE_8G
+///     BMA400_RANGE_16G
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getRange(uint8_t* range)
 {
     return getAccelParam(BMA400_RANGE, range);
 }
 
+/// @brief Sets output data rate
+/// @param odr Output data rate, assignable values are:
+///     BMA400_ODR_12_5HZ
+///     BMA400_ODR_25HZ
+///     BMA400_ODR_50HZ
+///     BMA400_ODR_100HZ
+///     BMA400_ODR_200HZ
+///     BMA400_ODR_400HZ
+///     BMA400_ODR_800HZ
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setODR(uint8_t odr)
 {
     return setAccelParam(BMA400_ODR, odr);
 }
 
+/// @brief Gets output data rate
+/// @param odr Output data rate, assignable values are:
+///     BMA400_ODR_12_5HZ
+///     BMA400_ODR_25HZ
+///     BMA400_ODR_50HZ
+///     BMA400_ODR_100HZ
+///     BMA400_ODR_200HZ
+///     BMA400_ODR_400HZ
+///     BMA400_ODR_800HZ
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getODR(uint8_t* odr)
 {
     return getAccelParam(BMA400_ODR, odr);
 }
 
+/// @brief Sets oversampling rate
+/// @param osr Oversampling rate, assignable values are:
+///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_1
+///     BMA400_ACCEL_OSR_SETTING_2
+///     BMA400_ACCEL_OSR_SETTING_3
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setOSR(uint8_t osr)
 {
     return setAccelParam(BMA400_OSR, osr);
 }
 
+/// @brief Gets oversampling rate
+/// @param osr Oversampling rate, assignable values are:
+///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_1
+///     BMA400_ACCEL_OSR_SETTING_2
+///     BMA400_ACCEL_OSR_SETTING_3
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getOSR(uint8_t* osr)
 {
     return getAccelParam(BMA400_OSR, osr);
 }
 
+/// @brief Sets low power oversampling rate
+/// @param osrLP Low power oversampling rate, assignable values are:
+///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_1
+///     BMA400_ACCEL_OSR_SETTING_2
+///     BMA400_ACCEL_OSR_SETTING_3
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setOSRLP(uint8_t osrLP)
 {
     return setAccelParam(BMA400_OSR_LP, osrLP);
 }
 
+/// @brief Gets low power oversampling rate
+/// @param osrLP Low power oversampling rate, assignable values are:
+///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_1
+///     BMA400_ACCEL_OSR_SETTING_2
+///     BMA400_ACCEL_OSR_SETTING_3
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getOSRLP(uint8_t* osrLP)
 {
     return getAccelParam(BMA400_OSR_LP, osrLP);
 }
 
+/// @brief Sets data source
+/// @param source Data source, assignable values are:
+///     BMA400_DATA_SRC_ACCEL_FILT_1
+///     BMA400_DATA_SRC_ACCEL_FILT_2
+///     BMA400_DATA_SRC_ACCEL_FILT_LP
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setDataSource(uint8_t source)
 {
     return setAccelParam(BMA400_DATA_SRC, source);
 }
 
+/// @brief Gets data source
+/// @param source Data source, assignable values are:
+///     BMA400_DATA_SRC_ACCEL_FILT_1
+///     BMA400_DATA_SRC_ACCEL_FILT_2
+///     BMA400_DATA_SRC_ACCEL_FILT_LP
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getDataSource(uint8_t* source)
 {
     return getAccelParam(BMA400_DATA_SRC, source);
 }
 
+/// @brief Sets filter 1 bandwidth
+/// @param bw Filter 1 bandwidth, assignable values are:
+///     BMA400_ACCEL_FILT1_BW_0
+///     BMA400_ACCEL_FILT1_BW_1
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setFilter1Bandwidth(uint8_t bw)
 {
     return setAccelParam(BMA400_FILT1_BW, bw);
 }
 
+/// @brief Gets filter 1 bandwidth
+/// @param bw Filter 1 bandwidth, assignable values are:
+///     BMA400_ACCEL_FILT1_BW_0
+///     BMA400_ACCEL_FILT1_BW_1
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getFilter1Bandwidth(uint8_t* bw)
 {
     return getAccelParam(BMA400_FILT1_BW, bw);
 }
 
+/// @brief Gets step count from sensor
+/// @param count Number of steps counted
+/// @param activityType Type of activity detected, assignable values are:
+///     BMA400_STILL_ACT
+///     BMA400_WALK_ACT
+///     BMA400_RUN_ACT
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getStepCount(uint32_t* count, uint8_t* activityType)
 {
     return bma400_get_steps_counted(count, activityType, &sensor);
 }
 
+/// @brief Runs self test procedure. This is a feature of the BMA400, where it
+// physically pushes its sensing element around to determine whether it's
+// behaving correctly.
+/// @return Error code. 0 means success, negative means failure. Can also return
+/// BMA400_W_SELF_TEST_FAIL (positive value) if self test completed, but
+/// parameters were outside acceptable values
 int8_t BMA400::selfTest()
 {
     return bma400_perform_self_test(&sensor);
 }
 
+/// @brief Gets acceleration data from the sensor
+/// @param data Struct containing acceleration of each axis, plus sensor time if
+/// included. See BMA400_SensorData
+/// @param sensorTime Whether to include sensor time in the data, default false
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
 {
     // Variable to track errors returned by API calls
@@ -303,6 +445,11 @@ int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
     return BMA400_OK;
 }
 
+/// @brief Converts raw acceleration data to floating point value in g's
+/// @param rawData Raw sensor data
+/// @param data Output data
+/// @param range Sensor measurement range in g's
+/// @param bitWidth Number of bits per axis (8 or 12)
 void BMA400::convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data, uint8_t range, uint8_t bitWidth)
 {
     // Convert range setting to g-range. This computation is shorthand for the
@@ -318,14 +465,17 @@ void BMA400::convertRawData(bma400_sensor_data* rawData, BMA400_SensorData* data
     // Convert xyz data from raw to g's. Raw data are 12/8-bit signed integers,
     // where the maximum raw value corresponds to the max of the range setting
     float rawToGs = gRange / pow(2, (bitWidth-1));
-    data->x = rawData->x * rawToGs;
-    data->y = rawData->y * rawToGs;
-    data->z = rawData->z * rawToGs;
+    data->accelX = rawData->x * rawToGs;
+    data->accelY = rawData->y * rawToGs;
+    data->accelZ = rawData->z * rawToGs;
 
     // Convert raw sensor time to milliseconds
     data->sensorTimeMillis = rawData->sensortime * 1000 / BMA400_TICKS_PER_SECOND;
 }
 
+/// @brief Gets temperature of the sensor
+/// @param temp Temperature in degrees C
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getTemperature(float* temp)
 {
     // Variable to track errors returned by API calls
@@ -344,6 +494,14 @@ int8_t BMA400::getTemperature(float* temp)
     return BMA400_OK;
 }
 
+/// @brief Sets interrupt pin as push/pull or open drain, and active high or low
+/// @param channel Which pin to configure, see bma400_int_chan
+/// @param mode 
+///     BMA400_INT_PUSH_PULL_ACTIVE_0
+///     BMA400_INT_PUSH_PULL_ACTIVE_1
+///     BMA400_INT_OPEN_DRIVE_ACTIVE_0
+///     BMA400_INT_OPEN_DRIVE_ACTIVE_1
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setInterruptPinMode(bma400_int_chan channel, uint8_t mode)
 {
     bma400_device_conf config =
@@ -358,6 +516,10 @@ int8_t BMA400::setInterruptPinMode(bma400_int_chan channel, uint8_t mode)
     return bma400_set_device_conf(&config, 1, &sensor);
 }
 
+/// @brief Enables interrupt condition
+/// @param intType Interrupt condition, see bma400_int_type
+/// @param enable Whether to enable or disable this condition
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::enableInterrupt(bma400_int_type intType, bool enable)
 {
     bma400_int_enable config =
@@ -368,16 +530,39 @@ int8_t BMA400::enableInterrupt(bma400_int_type intType, bool enable)
     return bma400_enable_interrupt(&config, 1, &sensor);
 }
 
+/// @brief Gets interrupt status flags
+/// @param status Interrupt status flags, can include any of the following:
+///     BMA400_ASSERTED_WAKEUP_INT
+///     BMA400_ASSERTED_ORIENT_CH
+///     BMA400_ASSERTED_GEN1_INT
+///     BMA400_ASSERTED_GEN2_INT
+///     BMA400_ASSERTED_INT_OVERRUN
+///     BMA400_ASSERTED_FIFO_FULL_INT
+///     BMA400_ASSERTED_FIFO_WM_INT
+///     BMA400_ASSERTED_DRDY_INT
+///     BMA400_ASSERTED_STEP_INT
+///     BMA400_ASSERTED_S_TAP_INT
+///     BMA400_ASSERTED_D_TAP_INT
+///     BMA400_ASSERTED_ACT_CH_X
+///     BMA400_ASSERTED_ACT_CH_Y
+///     BMA400_ASSERTED_ACT_CH_Z
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getInterruptStatus(uint16_t* status)
 {
     return bma400_get_interrupt_status(status, &sensor);
 }
 
+/// @brief Sets the interrupt pin for the data ready interrupt condition
+/// @param channel Which pin to use, see bma400_int_chan
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setDRDYInterruptChannel(bma400_int_chan channel)
 {
     return setAccelParam(BMA400_INT_CHAN, channel);
 }
 
+/// @brief Sets the generic 1 interrupt config
+/// @param config Generic 1 interrupt config, see bma400_gen_int_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setGeneric1Interrupt(bma400_gen_int_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -388,6 +573,9 @@ int8_t BMA400::setGeneric1Interrupt(bma400_gen_int_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the generic 2 interrupt config
+/// @param config Generic 2 interrupt config, see bma400_gen_int_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setGeneric2Interrupt(bma400_gen_int_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -398,6 +586,9 @@ int8_t BMA400::setGeneric2Interrupt(bma400_gen_int_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the orientation change interrupt config
+/// @param config Orientation change interrupt config, see bma400_orient_int_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setOrientationChangeInterrupt(bma400_orient_int_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -408,6 +599,9 @@ int8_t BMA400::setOrientationChangeInterrupt(bma400_orient_int_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the tap detection interrupt config
+/// @param config Tap detection interrupt config, see bma400_tap_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setTapInterrupt(bma400_tap_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -418,6 +612,9 @@ int8_t BMA400::setTapInterrupt(bma400_tap_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the step counter interrupt config
+/// @param config Step counter interrupt config, see bma400_step_int_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setStepCounterInterrupt(bma400_step_int_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -428,6 +625,9 @@ int8_t BMA400::setStepCounterInterrupt(bma400_step_int_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the activity change interrupt config
+/// @param config Activity change interrupt config, see bma400_act_ch_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setActivityChangeInterrupt(bma400_act_ch_conf* config)
 {
     bma400_sensor_conf sensorConfig =
@@ -438,6 +638,9 @@ int8_t BMA400::setActivityChangeInterrupt(bma400_act_ch_conf* config)
     return bma400_set_sensor_conf(&sensorConfig, 1, &sensor);
 }
 
+/// @brief Sets the wakeup interrupt config
+/// @param config Wakeup change interrupt config, see bma400_wakeup_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setWakeupInterrupt(bma400_wakeup_conf* config)
 {
     bma400_device_conf deviceConfig =
@@ -448,6 +651,9 @@ int8_t BMA400::setWakeupInterrupt(bma400_wakeup_conf* config)
     return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
+/// @brief Sets the FIFO config
+/// @param config FIFO config, see bma400_fifo_conf
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setFIFOConfig(bma400_fifo_conf* config)
 {
     // Convert watermark from number of measurements to number of bytes
@@ -462,6 +668,12 @@ int8_t BMA400::setFIFOConfig(bma400_fifo_conf* config)
     return bma400_set_device_conf(&deviceConfig, 1, &sensor);
 }
 
+/// @brief Gets the number of data samples stored in the FIFO buffer. It can
+/// store up to 1kB of data, and the storage format is configurable. Each axis
+/// can optionally be stored in the buffer, and each axis can be stored as
+/// either 8-bit or 12-bit (takes 2 full bytes).
+/// @param numData Number of data samples
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getFIFOLength(uint16_t* numData)
 {
     // Variable to track errors returned by API calls
@@ -493,6 +705,10 @@ int8_t BMA400::getFIFOLength(uint16_t* numData)
     return BMA400_OK;
 }
 
+/// @brief Gets acceleration data out of FIFO buffer
+/// @param data Array of data structs, see BMA400_SensorData
+/// @param numData Number of data samples to read
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
 {
     // Variable to track errors returned by API calls
@@ -508,13 +724,13 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     }
 
     // Short variable name to reference FIFO config flags
-    uint8_t flags = config.param.fifo_conf.conf_regs;
+    uint8_t* flags = &(config.param.fifo_conf.conf_regs);
 
     // Compute number of bytes that need to be read out from FIFO
-    uint16_t numBytes = *numData * bytesPerFIFOData(flags);
+    uint16_t numBytes = *numData * bytesPerFIFOData(*flags);
 
     // Determine whether sensor time is enabled
-    if(flags & BMA400_FIFO_TIME_EN)
+    if(*flags & BMA400_FIFO_TIME_EN)
     {
         // Sensor time is enabled, so one extra time frame will be output after
         // all data frames are read. If the buffer already has lots of data,
@@ -548,7 +764,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     }
 
     // Determine the number of bits per data
-    uint8_t bitWidth = ((flags & BMA400_FIFO_8_BIT_EN) != 0) ? 8 : 12;
+    uint8_t bitWidth = ((*flags & BMA400_FIFO_8_BIT_EN) != 0) ? 8 : 12;
 
     // Get current measurement range setting
     uint8_t range = 0;
@@ -569,11 +785,16 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     return BMA400_OK;
 }
 
+/// @brief Clears all data in FIFO buffer
+/// @return Error code. 0 means success, negative means failure
 int8_t BMA400::flushFIFO()
 {
     return bma400_set_fifo_flush(&sensor);
 }
 
+/// @brief Computes the number of bytes per data sample in the FIFO buffer
+/// @param fifoFlags FIFO config flags, see bma400_fifo_conf.conf_regs
+/// @return Error code. 0 means success, negative means failure
 uint8_t BMA400::bytesPerFIFOData(uint8_t fifoFlags)
 {
     // Determine how many axes are being stored in the FIFO buffer
@@ -582,13 +803,19 @@ uint8_t BMA400::bytesPerFIFOData(uint8_t fifoFlags)
                     + ((fifoFlags & BMA400_FIFO_Z_EN) != 0);
     
     // Determine the number of bytes per axis (2 full bytes for 12-bit mode)
-    uint8_t bytesPerAxis = ((fifoFlags & BMA400_FIFO_8_BIT_EN) != 0) ? 1 : 2;
+    uint8_t bytesPerAxis = (fifoFlags & BMA400_FIFO_8_BIT_EN) ? 1 : 2;
 
     // Compute the total number of bytes per data frame. Data frames include 1
     // header byte, plus 1 or 2 bytes per axis
     return 1 + (numAxes * bytesPerAxis);
 }
 
+/// @brief Helper function to read sensor registers
+/// @param regAddress Start address to read
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to read
+/// @param interfacePtr Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
 {
     // Make sure the number of bytes is valid
@@ -614,6 +841,12 @@ BMA400_INTF_RET_TYPE BMA400::readRegisters(uint8_t regAddress, uint8_t* dataBuff
     }
 }
 
+/// @brief Helper function to read sensor registers over I2C
+/// @param regAddress Start address to read
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to read
+/// @param interfaceData Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::readRegistersI2C(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
 {
     // Jump to desired register address
@@ -636,6 +869,12 @@ BMA400_INTF_RET_TYPE BMA400::readRegistersI2C(uint8_t regAddress, uint8_t* dataB
     return BMA400_OK;
 }
 
+/// @brief Helper function to read sensor registers over SPI
+/// @param regAddress Start address to read
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to read
+/// @param interfaceData Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::readRegistersSPI(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
 {
     // Start transmission
@@ -656,6 +895,12 @@ BMA400_INTF_RET_TYPE BMA400::readRegistersSPI(uint8_t regAddress, uint8_t* dataB
     return BMA400_OK;
 }
 
+/// @brief Helper function to write sensor registers
+/// @param regAddress Start address to write
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to write
+/// @param interfacePtr Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::writeRegisters(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
 {
     // Make sure the number of bytes is valid
@@ -681,6 +926,12 @@ BMA400_INTF_RET_TYPE BMA400::writeRegisters(uint8_t regAddress, const uint8_t* d
     }
 }
 
+/// @brief Helper function to write sensor registers over I2C
+/// @param regAddress Start address to write
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to write
+/// @param interfaceData Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::writeRegistersI2C(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
 {
     // Begin transmission
@@ -704,6 +955,12 @@ BMA400_INTF_RET_TYPE BMA400::writeRegistersI2C(uint8_t regAddress, const uint8_t
     return BMA400_OK;
 }
 
+/// @brief Helper function to write sensor registers over SPI
+/// @param regAddress Start address to write
+/// @param dataBuffer Buffer to store register values
+/// @param numBytes Number of bytes to write
+/// @param interfaceData Pointer to interface data, see BMA400_InterfaceData
+/// @return Error code. 0 means success, negative means failure
 BMA400_INTF_RET_TYPE BMA400::writeRegistersSPI(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, BMA400_InterfaceData* interfaceData)
 {
     // Begin transmission
@@ -726,6 +983,9 @@ BMA400_INTF_RET_TYPE BMA400::writeRegistersSPI(uint8_t regAddress, const uint8_t
     return BMA400_OK;
 }
 
+/// @brief Helper function to delay for some amount of time
+/// @param period Number of microseconds to delay
+/// @param interfacePtr Pointer to interface data, see BMA400_InterfaceData
 void BMA400::usDelay(uint32_t period, void* interfacePtr)
 {
     delayMicroseconds(period);

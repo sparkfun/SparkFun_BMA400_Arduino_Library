@@ -14,7 +14,7 @@
 // Generic error code for invalid settings
 #define BMA400_E_INVALID_SETTING (BMA400_E_INVALID_CONFIG-1)
 
-// Extra exes selection macros, in case user only wants 2 axes
+// Extra axes selection macros, in case user only wants 2 axes
 #define BMA400_AXIS_XY_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Y_EN)
 #define BMA400_AXIS_XZ_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Z_EN)
 #define BMA400_AXIS_YZ_EN (BMA400_AXIS_Y_EN | BMA400_AXIS_Z_EN)
@@ -43,9 +43,9 @@ struct BMA400_InterfaceData
 struct BMA400_SensorData
 {
     // Acceleration in g's
-    float x;
-    float y;
-    float z;
+    float accelX;
+    float accelY;
+    float accelZ;
 
     // Time of this data in milliseconds, measured by sensor
     uint32_t sensorTimeMillis;

@@ -204,13 +204,13 @@ void loop()
                 Serial.print("Acceleration in g's");
                 Serial.print("\t");
                 Serial.print("X: ");
-                Serial.print(fifoData[i].x, 3);
+                Serial.print(fifoData[i].accelX, 3);
                 Serial.print("\t");
                 Serial.print("Y: ");
-                Serial.print(fifoData[i].y, 3);
+                Serial.print(fifoData[i].accelY, 3);
                 Serial.print("\t");
                 Serial.print("Z: ");
-                Serial.println(fifoData[i].z, 3);
+                Serial.println(fifoData[i].accelZ, 3);
             }
         }
         else

@@ -44,13 +44,13 @@ void loop()
         Serial.print("Acceleration in g's");
         Serial.print("\t");
         Serial.print("X: ");
-        Serial.print(data.x, 3);
+        Serial.print(data.accelX, 3);
         Serial.print("\t");
         Serial.print("Y: ");
-        Serial.print(data.y, 3);
+        Serial.print(data.accelY, 3);
         Serial.print("\t");
         Serial.print("Z: ");
-        Serial.println(data.z, 3);
+        Serial.println(data.accelZ, 3);
     }
     else
     {
