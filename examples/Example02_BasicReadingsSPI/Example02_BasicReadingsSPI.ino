@@ -34,29 +34,19 @@ void setup()
 void loop()
 {
     // Get measurements from the sensor
-    int8_t err = accelerometer.getSensorData();
+    accelerometer.getSensorData();
 
-    // Check whether data was acquired successfully
-    if(err == BMA400_OK)
-    {
-        // Acquisistion succeeded, print acceleration data
-        Serial.print("Acceleration in g's");
-        Serial.print("\t");
-        Serial.print("X: ");
-        Serial.print(accelerometer.data.accelX, 3);
-        Serial.print("\t");
-        Serial.print("Y: ");
-        Serial.print(accelerometer.data.accelY, 3);
-        Serial.print("\t");
-        Serial.print("Z: ");
-        Serial.println(accelerometer.data.accelZ, 3);
-    }
-    else
-    {
-        // Acquisition failed, most likely a communication error (code -2)
-        Serial.print("Error getting data from sensor! Error code: ");
-        Serial.println(err);
-    }
+    // Print acceleration data
+    Serial.print("Acceleration in g's");
+    Serial.print("\t");
+    Serial.print("X: ");
+    Serial.print(accelerometer.data.accelX, 3);
+    Serial.print("\t");
+    Serial.print("Y: ");
+    Serial.print(accelerometer.data.accelY, 3);
+    Serial.print("\t");
+    Serial.print("Z: ");
+    Serial.println(accelerometer.data.accelZ, 3);
 
     // Print 50x per second
     delay(20);

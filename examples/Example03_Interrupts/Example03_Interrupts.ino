@@ -36,47 +36,20 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // The default ODR (output data rate) is 200Hz, which is too fast to read
     // reasonably. Here we reduce the ODR to the minimum of 12.5Hz
-    err = accelerometer.setODR(BMA400_ODR_12_5HZ);
-    if(err != BMA400_OK)
-    {
-        // ODR setting failed, most likely a communication error (code -2)
-        Serial.print("ODR setting failed! Error code: ");
-        Serial.println(err);
-    }
+    accelerometer.setODR(BMA400_ODR_12_5HZ);
 
     // The BMA400 has 2 interrupt pins. All interrupt conditions can be mapped
     // to either pin, so we'll just choose the first one for this example
-    err = accelerometer.setDRDYInterruptChannel(BMA400_INT_CHANNEL_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt channel failed, most likely a communication error (code -2)
-        Serial.print("Interrupt channel failed! Error code: ");
-        Serial.println(err);
-    }
+    accelerometer.setDRDYInterruptChannel(BMA400_INT_CHANNEL_1);
 
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable DRDY interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_DRDY_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_DRDY_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
@@ -92,47 +65,27 @@ void loop()
         Serial.print("Interrupt occurred!");
         Serial.print("\t");
 
-        // Variable to track errors returned by API calls
-        int8_t err = BMA400_OK;
-
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
+        accelerometer.getInterruptStatus(&interruptStatus);
 
         // Check if this is the "data ready" interrupt condition
         if(interruptStatus & BMA400_ASSERTED_DRDY_INT)
         {
             // Get measurements from the sensor
-            int8_t err = accelerometer.getSensorData();
+            accelerometer.getSensorData();
 
-            // Check whether data was acquired successfully
-            if(err == BMA400_OK)
-            {
-                // Acquisistion succeeded, print acceleration data
-                Serial.print("Acceleration in g's");
-                Serial.print("\t");
-                Serial.print("X: ");
-                Serial.print(accelerometer.data.accelX, 3);
-                Serial.print("\t");
-                Serial.print("Y: ");
-                Serial.print(accelerometer.data.accelY, 3);
-                Serial.print("\t");
-                Serial.print("Z: ");
-                Serial.println(accelerometer.data.accelZ, 3);
-            }
-            else
-            {
-                // Acquisition failed, most likely a communication error (code -2)
-                Serial.print("Error getting data from sensor! Error code: ");
-                Serial.println(err);
-            }
+            // Print acceleration data
+            Serial.print("Acceleration in g's");
+            Serial.print("\t");
+            Serial.print("X: ");
+            Serial.print(accelerometer.data.accelX, 3);
+            Serial.print("\t");
+            Serial.print("Y: ");
+            Serial.print(accelerometer.data.accelY, 3);
+            Serial.print("\t");
+            Serial.print("Z: ");
+            Serial.println(accelerometer.data.accelZ, 3);
         }
         else
         {

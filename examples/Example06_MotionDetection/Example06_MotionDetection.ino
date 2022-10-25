@@ -36,9 +36,6 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // Here we configure the generic interrupt feature of the BMA400. It
     // triggers an interrupt when the measured acceleration exceeds some
     // reference acceleration that we can specify. There are several other
@@ -60,32 +57,14 @@ void setup()
         .int_thres_ref_z = 512, // Raw 12-bit acceleration value (at 4g range (default), 512 = 1g)
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
-    err = accelerometer.setGeneric1Interrupt(&config);
-    if(err != BMA400_OK)
-    {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt settings failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setGeneric1Interrupt(&config);
+    
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable generic 1 interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_GEN1_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_GEN1_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
@@ -101,20 +80,10 @@ void loop()
         Serial.print("Interrupt occurred!");
         Serial.print("\t");
 
-        // Variable to track errors returned by API calls
-        int8_t err = BMA400_OK;
-
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
-
+        accelerometer.getInterruptStatus(&interruptStatus);
+        
         // Check if this is the generic 1 interrupt condition
         if(interruptStatus & BMA400_ASSERTED_GEN1_INT)
         {

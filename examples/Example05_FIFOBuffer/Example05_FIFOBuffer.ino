@@ -43,18 +43,9 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // The default ODR (output data rate) is 200Hz, which is too fast to read
     // reasonably. Here we reduce the ODR to the minimum of 12.5Hz
-    err = accelerometer.setODR(BMA400_ODR_12_5HZ);
-    if(err != BMA400_OK)
-    {
-        // ODR setting failed, most likely a communication error (code -2)
-        Serial.print("ODR setting failed! Error code: ");
-        Serial.println(err);
-    }
+    accelerometer.setODR(BMA400_ODR_12_5HZ);
 
     // Here we set the config parameters for the FIFO buffer. There are several
     // flags that we can set, which are listed below. Additionally, we can set
@@ -76,55 +67,24 @@ void setup()
         .fifo_full_channel = BMA400_UNMAP_INT_PIN,
         .fifo_wm_channel = BMA400_INT_CHANNEL_1
     };
-    err = accelerometer.setFIFOConfig(&config);
-    if(err != BMA400_OK)
-    {
-        // FIFO config flags failed, most likely a communication error (code -2)
-        Serial.print("FIFO config flags failed! Error code: ");
-        Serial.println(err);
-    }
+    accelerometer.setFIFOConfig(&config);
 
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable FIFO watermark interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_FIFO_WM_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_FIFO_WM_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
 
 void loop()
 {
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // Get number of data samples currently stored in FIFO buffer
     uint16_t currentFIFOLength = 0;
-    err = accelerometer.getFIFOLength(&currentFIFOLength);
-    if(err != BMA400_OK)
-    {
-        // FIFO length failed, most likely a communication error (code -2)
-        Serial.print("FIFO length failed! Error code: ");
-        Serial.println(err);
-
-        // If getFIFOLength() failed this time, it will most likely fail next
-        // time. So let's wait a bit before trying again
-        delay(1000);
-    }
-
+    accelerometer.getFIFOLength(&currentFIFOLength);
+    
     // Check whether number of samples in FIFO buffer has changed
     if(previousFIFOLength != currentFIFOLength)
     {
@@ -143,14 +103,7 @@ void loop()
         if(currentFIFOLength > numSamples)
         {
             Serial.println("Too many samples in FIFO buffer, flushing...");
-            
-            err = accelerometer.flushFIFO();
-            if(err != BMA400_OK)
-            {
-                // FIFO flush failed, most likely a communication error (code -2)
-                Serial.print("FIFO flush failed! Error code: ");
-                Serial.println(err);
-            }
+            accelerometer.flushFIFO();
         }
     }
 
@@ -164,29 +117,15 @@ void loop()
 
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
-
+        accelerometer.getInterruptStatus(&interruptStatus);
+        
         // Check if this is the FIFO watermerk interrupt condition
         if(interruptStatus & BMA400_ASSERTED_FIFO_WM_INT)
         {
             // Get FIFO data from the sensor
             uint16_t samplesRead = numSamples;
-            err = accelerometer.getFIFOData(fifoData, &samplesRead);
-            if(err != BMA400_OK)
-            {
-                // FIFO data get failed, most likely a communication error (code -2)
-                Serial.print("Get FIFO data failed! Error code: ");
-                Serial.println(err);
-                return;
-            }
-
+            accelerometer.getFIFOData(fifoData, &samplesRead);
+            
             // samplesRead will be changed to the number of data frames actually
             // read from the FIFO buffer. Check whether it's equal to numSamples
             if(samplesRead != numSamples)

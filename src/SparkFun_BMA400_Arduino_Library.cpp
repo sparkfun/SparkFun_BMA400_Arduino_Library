@@ -17,7 +17,7 @@ int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
     if(address != BMA400_I2C_ADDRESS_DEFAULT && address != BMA400_I2C_ADDRESS_SECONDARY)
     {
         // Invalid option, don't do anything
-        return BMA400_E_INVALID_SETTING;
+        return BMA400_E_INVALID_CONFIG;
     }
 
     // Address is valid option
@@ -148,35 +148,35 @@ int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
     switch(param)
     {
         case BMA400_ODR:
-            if(val < BMA400_ODR_12_5HZ || val > BMA400_ODR_800HZ) return BMA400_E_INVALID_SETTING;
+            if(val < BMA400_ODR_12_5HZ || val > BMA400_ODR_800HZ) return BMA400_E_INVALID_CONFIG;
             config.param.accel.odr = val;
             break;
         case BMA400_RANGE:
-            if(val > BMA400_RANGE_16G) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_RANGE_16G) return BMA400_E_INVALID_CONFIG;
             config.param.accel.range = val;
             break;
         case BMA400_DATA_SRC:
-            if(val > BMA400_DATA_SRC_ACCEL_FILT_LP) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_DATA_SRC_ACCEL_FILT_LP) return BMA400_E_INVALID_CONFIG;
             config.param.accel.data_src = val;
             break;
         case BMA400_OSR:
-            if(val > BMA400_ACCEL_OSR_SETTING_3) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_ACCEL_OSR_SETTING_3) return BMA400_E_INVALID_CONFIG;
             config.param.accel.osr = val;
             break;
         case BMA400_OSR_LP:
-            if(val > BMA400_ACCEL_OSR_SETTING_3) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_ACCEL_OSR_SETTING_3) return BMA400_E_INVALID_CONFIG;
             config.param.accel.osr_lp = val;
             break;
         case BMA400_FILT1_BW:
-            if(val > BMA400_ACCEL_FILT1_BW_1) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_ACCEL_FILT1_BW_1) return BMA400_E_INVALID_CONFIG;
             config.param.accel.filt1_bw = val;
             break;
         case BMA400_INT_CHAN:
-            if(val > BMA400_MAP_BOTH_INT_PINS) return BMA400_E_INVALID_SETTING;
+            if(val > BMA400_MAP_BOTH_INT_PINS) return BMA400_E_INVALID_CONFIG;
             config.param.accel.int_chan = (bma400_int_chan) val;
             break;
         default:
-            return BMA400_E_INVALID_SETTING;
+            return BMA400_E_INVALID_CONFIG;
             break;
     }
 
@@ -224,7 +224,7 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
             *val = config.param.accel.int_chan;
             break;
         default:
-            return BMA400_E_INVALID_SETTING;
+            return BMA400_E_INVALID_CONFIG;
             break;
     }
 
@@ -395,7 +395,16 @@ int8_t BMA400::getStepCount(uint32_t* count, uint8_t* activityType)
 /// parameters were outside acceptable values
 int8_t BMA400::selfTest()
 {
-    return bma400_perform_self_test(&sensor);
+    // Variable to track errors returned by API calls
+    int8_t err = BMA400_OK;
+
+    // Run the self test
+    err = bma400_perform_self_test(&sensor);
+    if(err != BMA400_OK) return err;
+
+    // If the self test is successful, bma400_perform_self_test performs a soft
+    // reset of the sensor, so we should return to normal mode
+    return setMode(BMA400_MODE_NORMAL);
 }
 
 /// @brief Gets acceleration data from the sensor

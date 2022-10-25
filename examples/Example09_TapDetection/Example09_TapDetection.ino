@@ -36,28 +36,13 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // The tap detection requires a 200Hz ODR (default)
-    err = accelerometer.setODR(BMA400_ODR_200HZ);
-    if(err != BMA400_OK)
-    {
-        // ODR setting failed, most likely a communication error (code -2)
-        Serial.print("ODR setting failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setODR(BMA400_ODR_200HZ);
+    
     // Increasing the range from the default of 4g to the max of 16g helps
     // capture the large acceleration spikes caused by tapping
-    err = accelerometer.setRange(BMA400_RANGE_16G);
-    if(err != BMA400_OK)
-    {
-        // Range setting failed, most likely a communication error (code -2)
-        Serial.print("Range setting failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setRange(BMA400_RANGE_16G);
+    
     // Here we configure the tap detection feature of the BMA400. It can detect
     // both single and double taps as a form of user input. There are a number
     // of parameters than can be configured to help distinguish taps from other
@@ -71,41 +56,17 @@ void setup()
         .quiet_dt = BMA400_QUIET_DT_4_DATA_SAMPLES, // Minimum time between 2 taps to trigger double tap interrupt
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
-    err = accelerometer.setTapInterrupt(&config);
-    if(err != BMA400_OK)
-    {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt settings failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setTapInterrupt(&config);
+    
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable single tap interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_SINGLE_TAP_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_SINGLE_TAP_INT_EN, true);
+    
     // Enable double tap interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_DOUBLE_TAP_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_DOUBLE_TAP_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
@@ -121,20 +82,10 @@ void loop()
         Serial.print("Interrupt occurred!");
         Serial.print("\t");
 
-        // Variable to track errors returned by API calls
-        int8_t err = BMA400_OK;
-
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
-
+        accelerometer.getInterruptStatus(&interruptStatus);
+        
         // Check if this is the tap interrupt condition
         if(interruptStatus & BMA400_ASSERTED_S_TAP_INT)
         {

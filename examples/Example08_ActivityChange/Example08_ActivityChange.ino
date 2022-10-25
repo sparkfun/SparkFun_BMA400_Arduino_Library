@@ -36,9 +36,6 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // Here we configure the activity change detection feature of the BMA400.
     // This evaluates the acceleration data over a certain period defined by
     // act_ch_ntps, and triggers an interrupt if one period is significantly
@@ -52,32 +49,14 @@ void setup()
         .act_ch_ntps = BMA400_ACT_CH_SAMPLE_CNT_64, // Measurement period (also depends on ODR)
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
-    err = accelerometer.setActivityChangeInterrupt(&config);
-    if(err != BMA400_OK)
-    {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt settings failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setActivityChangeInterrupt(&config);
+    
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable activity change interrupt condition
-    err = accelerometer.enableInterrupt(BMA400_ACTIVITY_CHANGE_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_ACTIVITY_CHANGE_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
@@ -93,19 +72,9 @@ void loop()
         Serial.print("Interrupt occurred!");
         Serial.print("\t");
 
-        // Variable to track errors returned by API calls
-        int8_t err = BMA400_OK;
-
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
+        accelerometer.getInterruptStatus(&interruptStatus);
 
         // Check if this is the activity change interrupt condition
         if(interruptStatus & BMA400_ASSERTED_ACT_CH_X)

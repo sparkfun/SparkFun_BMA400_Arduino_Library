@@ -36,9 +36,6 @@ void setup()
 
     Serial.println("BMA400 connected!");
 
-    // Variable to track errors returned by API calls
-    int8_t err = BMA400_OK;
-
     // Here we configure the step counter feature of the BMA400. Step detection
     // and counting is handled entirely by the sensor. The parameters used for
     // step detection can be modified, but it's not recommended and is not well
@@ -48,34 +45,16 @@ void setup()
     {
         .int_chan = BMA400_INT_CHANNEL_1 // Which pin to use for interrupts
     };
-    err = accelerometer.setStepCounterInterrupt(&config);
-    if(err != BMA400_OK)
-    {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("Interrupt settings failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setStepCounterInterrupt(&config);
+    
     // Here we configure the INT1 pin to push/pull mode, active high
-    err = accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
-    if(err != BMA400_OK)
-    {
-        // Interrupt pin mode failed, most likely a communication error (code -2)
-        Serial.print("Interrupt pin mode failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.setInterruptPinMode(BMA400_INT_CHANNEL_1, BMA400_INT_PUSH_PULL_ACTIVE_1);
+    
     // Enable step counter interrupt condition. This must be set to enable step
     // counting at all, even if you don't want interrupts to be generated.
     // In that case,  set the interrupt channel above to BMA400_UNMAP_INT_PIN
-    err = accelerometer.enableInterrupt(BMA400_STEP_COUNTER_INT_EN, true);
-    if(err != BMA400_OK)
-    {
-        // Interrupt enable failed, most likely a communication error (code -2)
-        Serial.print("Interrupt enable failed! Error code: ");
-        Serial.println(err);
-    }
-
+    accelerometer.enableInterrupt(BMA400_STEP_COUNTER_INT_EN, true);
+    
     // Setup interrupt handler
     attachInterrupt(digitalPinToInterrupt(interruptPin), bma400InterruptHandler, RISING);
 }
@@ -91,35 +70,18 @@ void loop()
         Serial.print("Interrupt occurred!");
         Serial.print("\t");
 
-        // Variable to track errors returned by API calls
-        int8_t err = BMA400_OK;
-
         // Get the interrupt status to know which condition triggered
         uint16_t interruptStatus = 0;
-        err = accelerometer.getInterruptStatus(&interruptStatus);
-        if(err != BMA400_OK)
-        {
-            // Status get failed, most likely a communication error (code -2)
-            Serial.print("Get interrupt status failed! Error code: ");
-            Serial.println(err);
-            return;
-        }
-
+        accelerometer.getInterruptStatus(&interruptStatus);
+        
         // Check if this is the step interrupt condition
         if(interruptStatus & BMA400_ASSERTED_STEP_INT)
         {
             // Get total step count and detected activity type (running/walking/still)
             uint32_t stepCount = 0;
             uint8_t activityType = 0;
-            err = accelerometer.getStepCount(&stepCount, &activityType);
-            if(err != BMA400_OK)
-            {
-                // Count get failed, most likely a communication error (code -2)
-                Serial.print("Get step count failed! Error code: ");
-                Serial.println(err);
-                return;
-            }
-
+            accelerometer.getStepCount(&stepCount, &activityType);
+            
             // Print total step count so far
             Serial.print("Step detected! Step count: ");
             Serial.print(stepCount);

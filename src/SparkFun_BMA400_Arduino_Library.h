@@ -11,9 +11,6 @@
 #define BMA400_I2C_ADDRESS_DEFAULT BMA400_I2C_ADDRESS_SDO_LOW    // 0x14
 #define BMA400_I2C_ADDRESS_SECONDARY BMA400_I2C_ADDRESS_SDO_HIGH // 0x15
 
-// Generic error code for invalid settings
-#define BMA400_E_INVALID_SETTING (BMA400_E_INVALID_CONFIG-1)
-
 // Extra axes selection macros, in case user only wants 2 axes
 #define BMA400_AXIS_XY_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Y_EN)
 #define BMA400_AXIS_XZ_EN (BMA400_AXIS_X_EN | BMA400_AXIS_Z_EN)
