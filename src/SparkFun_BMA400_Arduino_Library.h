@@ -110,7 +110,7 @@ class BMA400
         int8_t selfTest();
 
         // Data acquisistion
-        int8_t getSensorData(BMA400_SensorData* data, bool sensorTime = false);
+        int8_t getSensorData(bool sensorTime = false);
         int8_t getTemperature(float* temp);
 
         // Interrupt control
@@ -133,6 +133,9 @@ class BMA400
         int8_t getFIFOLength(uint16_t* numData);
         int8_t getFIFOData(BMA400_SensorData* data, uint16_t* numData);
         int8_t flushFIFO();
+
+        // Latest measurement from the sensor
+        BMA400_SensorData data;
 
     private:
         // Sensor initialization, after communication interface has been selected

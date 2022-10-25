@@ -195,8 +195,7 @@ void logAccelData()
     while (powerMode == BMA400_MODE_NORMAL)
     {
         // Get measurements from the sensor
-        BMA400_SensorData data;
-        err = accelerometer.getSensorData(&data);
+        err = accelerometer.getSensorData();
 
         // Check whether data was acquired successfully
         if(err == BMA400_OK)
@@ -205,13 +204,13 @@ void logAccelData()
             Serial.print("Acceleration in g's");
             Serial.print("\t");
             Serial.print("X: ");
-            Serial.print(data.accelX, 3);
+            Serial.print(accelerometer.data.accelX, 3);
             Serial.print("\t");
             Serial.print("Y: ");
-            Serial.print(data.accelY, 3);
+            Serial.print(accelerometer.data.accelY, 3);
             Serial.print("\t");
             Serial.print("Z: ");
-            Serial.println(data.accelZ, 3);
+            Serial.println(accelerometer.data.accelZ, 3);
         }
         else
         {

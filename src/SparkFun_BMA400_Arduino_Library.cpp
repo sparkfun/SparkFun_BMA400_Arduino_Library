@@ -71,17 +71,11 @@ int8_t BMA400::begin()
 
     // Reset the sensor
     err = bma400_soft_reset(&sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Initialize the sensor
     err = bma400_init(&sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Set to normal power mode
     return setMode(BMA400_MODE_NORMAL);
@@ -89,7 +83,7 @@ int8_t BMA400::begin()
 
 /// @brief Sets power mode of sensor
 /// @param mode Sensor power mode. Assignable values are:
-///     BMA400_MODE_NORMAL
+///     BMA400_MODE_NORMAL (Default)
 ///     BMA400_MODE_SLEEP
 ///     BMA400_MODE_LOW_POWER
 /// @return Error code. 0 means success, negative means failure
@@ -99,8 +93,8 @@ int8_t BMA400::setMode(uint8_t mode)
 }
 
 /// @brief Gets power mode of sensor
-/// @param mode Sensor power mode. Will be set to one of the following:
-///     BMA400_MODE_NORMAL
+/// @param mode Sensor power mode. Assignable values are:
+///     BMA400_MODE_NORMAL (Default)
 ///     BMA400_MODE_SLEEP
 ///     BMA400_MODE_LOW_POWER
 /// @return Error code. 0 means success, negative means failure
@@ -148,10 +142,7 @@ int8_t BMA400::setAccelParam(BMA400_AccelParam param, uint8_t val)
     bma400_sensor_conf config;
     config.type = BMA400_ACCEL;
     err = bma400_get_sensor_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Change requested parameter to new value if it's valid
     switch(param)
@@ -206,10 +197,7 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
     bma400_sensor_conf config;
     config.type = BMA400_ACCEL;
     err = bma400_get_sensor_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Get requested parameter
     switch(param)
@@ -246,7 +234,7 @@ int8_t BMA400::getAccelParam(BMA400_AccelParam param, uint8_t* val)
 /// @brief Sets measurement range
 /// @param range Sensor range, assignable values are:
 ///     BMA400_RANGE_2G
-///     BMA400_RANGE_4G
+///     BMA400_RANGE_4G (Default)
 ///     BMA400_RANGE_8G
 ///     BMA400_RANGE_16G
 /// @return Error code. 0 means success, negative means failure
@@ -258,7 +246,7 @@ int8_t BMA400::setRange(uint8_t range)
 /// @brief Gets measurement range
 /// @param range Sensor range, assignable values are:
 ///     BMA400_RANGE_2G
-///     BMA400_RANGE_4G
+///     BMA400_RANGE_4G (Default)
 ///     BMA400_RANGE_8G
 ///     BMA400_RANGE_16G
 /// @return Error code. 0 means success, negative means failure
@@ -273,7 +261,7 @@ int8_t BMA400::getRange(uint8_t* range)
 ///     BMA400_ODR_25HZ
 ///     BMA400_ODR_50HZ
 ///     BMA400_ODR_100HZ
-///     BMA400_ODR_200HZ
+///     BMA400_ODR_200HZ (Default)
 ///     BMA400_ODR_400HZ
 ///     BMA400_ODR_800HZ
 /// @return Error code. 0 means success, negative means failure
@@ -288,7 +276,7 @@ int8_t BMA400::setODR(uint8_t odr)
 ///     BMA400_ODR_25HZ
 ///     BMA400_ODR_50HZ
 ///     BMA400_ODR_100HZ
-///     BMA400_ODR_200HZ
+///     BMA400_ODR_200HZ (Default)
 ///     BMA400_ODR_400HZ
 ///     BMA400_ODR_800HZ
 /// @return Error code. 0 means success, negative means failure
@@ -299,10 +287,10 @@ int8_t BMA400::getODR(uint8_t* odr)
 
 /// @brief Sets oversampling rate
 /// @param osr Oversampling rate, assignable values are:
-///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_0 (Default, lowest power, lowest accuracy)
 ///     BMA400_ACCEL_OSR_SETTING_1
 ///     BMA400_ACCEL_OSR_SETTING_2
-///     BMA400_ACCEL_OSR_SETTING_3
+///     BMA400_ACCEL_OSR_SETTING_3 (Highest power, highest accuracy)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setOSR(uint8_t osr)
 {
@@ -311,10 +299,10 @@ int8_t BMA400::setOSR(uint8_t osr)
 
 /// @brief Gets oversampling rate
 /// @param osr Oversampling rate, assignable values are:
-///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_0 (Default, lowest power, lowest accuracy)
 ///     BMA400_ACCEL_OSR_SETTING_1
 ///     BMA400_ACCEL_OSR_SETTING_2
-///     BMA400_ACCEL_OSR_SETTING_3
+///     BMA400_ACCEL_OSR_SETTING_3 (Highest power, highest accuracy)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getOSR(uint8_t* osr)
 {
@@ -323,10 +311,10 @@ int8_t BMA400::getOSR(uint8_t* osr)
 
 /// @brief Sets low power oversampling rate
 /// @param osrLP Low power oversampling rate, assignable values are:
-///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_0 (Default, lowest power, lowest accuracy)
 ///     BMA400_ACCEL_OSR_SETTING_1
 ///     BMA400_ACCEL_OSR_SETTING_2
-///     BMA400_ACCEL_OSR_SETTING_3
+///     BMA400_ACCEL_OSR_SETTING_3 (Highest power, highest accuracy)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setOSRLP(uint8_t osrLP)
 {
@@ -335,10 +323,10 @@ int8_t BMA400::setOSRLP(uint8_t osrLP)
 
 /// @brief Gets low power oversampling rate
 /// @param osrLP Low power oversampling rate, assignable values are:
-///     BMA400_ACCEL_OSR_SETTING_0
+///     BMA400_ACCEL_OSR_SETTING_0 (Default, lowest power, lowest accuracy)
 ///     BMA400_ACCEL_OSR_SETTING_1
 ///     BMA400_ACCEL_OSR_SETTING_2
-///     BMA400_ACCEL_OSR_SETTING_3
+///     BMA400_ACCEL_OSR_SETTING_3 (Highest power, highest accuracy)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getOSRLP(uint8_t* osrLP)
 {
@@ -347,9 +335,9 @@ int8_t BMA400::getOSRLP(uint8_t* osrLP)
 
 /// @brief Sets data source
 /// @param source Data source, assignable values are:
-///     BMA400_DATA_SRC_ACCEL_FILT_1
-///     BMA400_DATA_SRC_ACCEL_FILT_2
-///     BMA400_DATA_SRC_ACCEL_FILT_LP
+///     BMA400_DATA_SRC_ACCEL_FILT_1 (Default, variable ODR)
+///     BMA400_DATA_SRC_ACCEL_FILT_2 (100Hz ODR)
+///     BMA400_DATA_SRC_ACCEL_FILT_LP (100Hz ODR, 1Hz bandwidth)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setDataSource(uint8_t source)
 {
@@ -358,9 +346,9 @@ int8_t BMA400::setDataSource(uint8_t source)
 
 /// @brief Gets data source
 /// @param source Data source, assignable values are:
-///     BMA400_DATA_SRC_ACCEL_FILT_1
-///     BMA400_DATA_SRC_ACCEL_FILT_2
-///     BMA400_DATA_SRC_ACCEL_FILT_LP
+///     BMA400_DATA_SRC_ACCEL_FILT_1 (Default, variable ODR)
+///     BMA400_DATA_SRC_ACCEL_FILT_2 (100Hz ODR)
+///     BMA400_DATA_SRC_ACCEL_FILT_LP (100Hz ODR, 1Hz bandwidth)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getDataSource(uint8_t* source)
 {
@@ -369,8 +357,8 @@ int8_t BMA400::getDataSource(uint8_t* source)
 
 /// @brief Sets filter 1 bandwidth
 /// @param bw Filter 1 bandwidth, assignable values are:
-///     BMA400_ACCEL_FILT1_BW_0
-///     BMA400_ACCEL_FILT1_BW_1
+///     BMA400_ACCEL_FILT1_BW_0 (Default, 0.48*ODR)
+///     BMA400_ACCEL_FILT1_BW_1 (0.24*ODR)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::setFilter1Bandwidth(uint8_t bw)
 {
@@ -379,8 +367,8 @@ int8_t BMA400::setFilter1Bandwidth(uint8_t bw)
 
 /// @brief Gets filter 1 bandwidth
 /// @param bw Filter 1 bandwidth, assignable values are:
-///     BMA400_ACCEL_FILT1_BW_0
-///     BMA400_ACCEL_FILT1_BW_1
+///     BMA400_ACCEL_FILT1_BW_0 (Default, 0.48*ODR)
+///     BMA400_ACCEL_FILT1_BW_1 (0.24*ODR)
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getFilter1Bandwidth(uint8_t* bw)
 {
@@ -415,7 +403,7 @@ int8_t BMA400::selfTest()
 /// included. See BMA400_SensorData
 /// @param sensorTime Whether to include sensor time in the data, default false
 /// @return Error code. 0 means success, negative means failure
-int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
+int8_t BMA400::getSensorData(bool sensorTime)
 {
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
@@ -426,21 +414,15 @@ int8_t BMA400::getSensorData(BMA400_SensorData* data, bool sensorTime)
     // Get raw data from sensor
     bma400_sensor_data rawData;
     err = bma400_get_accel_data(dataSel, &rawData, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Get current measurement range setting
     uint8_t range = 0;
     err = getRange(&range);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Convert raw data to g's
-    convertRawData(&rawData, data, range);
+    convertRawData(&rawData, &data, range);
 
     return BMA400_OK;
 }
@@ -484,10 +466,7 @@ int8_t BMA400::getTemperature(float* temp)
     // Get raw data from sensor
     int16_t rawTemp = 0;
     err = bma400_get_temperature_data(&rawTemp, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Convert raw data to degrees C
     *temp = rawTemp / 10.0;
@@ -498,7 +477,7 @@ int8_t BMA400::getTemperature(float* temp)
 /// @param channel Which pin to configure, see bma400_int_chan
 /// @param mode 
 ///     BMA400_INT_PUSH_PULL_ACTIVE_0
-///     BMA400_INT_PUSH_PULL_ACTIVE_1
+///     BMA400_INT_PUSH_PULL_ACTIVE_1 (Default)
 ///     BMA400_INT_OPEN_DRIVE_ACTIVE_0
 ///     BMA400_INT_OPEN_DRIVE_ACTIVE_1
 /// @return Error code. 0 means success, negative means failure
@@ -683,10 +662,7 @@ int8_t BMA400::getFIFOLength(uint16_t* numData)
     // FIFO length, so the regsiters have to be read manually
     uint8_t data[2] = {0};
     err = bma400_get_regs(BMA400_REG_FIFO_LENGTH, data, 2, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     uint16_t numBytes = ((uint16_t) data[1] << 8) | data[0];
 
@@ -694,10 +670,7 @@ int8_t BMA400::getFIFOLength(uint16_t* numData)
     struct bma400_device_conf config;
     config.type = BMA400_FIFO_CONF;
     err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Compute the total number of bytes for this watermark level
     *numData = numBytes / bytesPerFIFOData(config.param.fifo_conf.conf_regs);
@@ -718,10 +691,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     struct bma400_device_conf config;
     config.type = BMA400_FIFO_CONF;
     err = bma400_get_device_conf(&config, 1, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Short variable name to reference FIFO config flags
     uint8_t* flags = &(config.param.fifo_conf.conf_regs);
@@ -748,20 +718,14 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     fifoData.data = byteBuffer;
     fifoData.length = numBytes;
     err = bma400_get_fifo_data(&fifoData, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Create array of raw data
     bma400_sensor_data rawData[*numData];
 
     // Extract sensor data out of FIFO data
     err = bma400_extract_accel(&fifoData, rawData, numData, &sensor);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Determine the number of bits per data
     uint8_t bitWidth = ((*flags & BMA400_FIFO_8_BIT_EN) != 0) ? 8 : 12;
@@ -769,10 +733,7 @@ int8_t BMA400::getFIFOData(BMA400_SensorData* data, uint16_t* numData)
     // Get current measurement range setting
     uint8_t range = 0;
     err = getRange(&range);
-    if(err != BMA400_OK)
-    {
-        return err;
-    }
+    if(err != BMA400_OK) return err;
 
     // Convert raw data to g's for each data frame
     for(uint16_t i = 0; i < *numData; i++)
