@@ -409,8 +409,6 @@ int8_t BMA400::selfTest()
 
 /// @brief Gets acceleration data from the sensor. This must be called to update
 /// the data struct
-/// @param data Struct containing acceleration of each axis, plus sensor time if
-/// included. See BMA400_SensorData
 /// @param sensorTime Whether to include sensor time in the data, default false
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::getSensorData(bool sensorTime)
