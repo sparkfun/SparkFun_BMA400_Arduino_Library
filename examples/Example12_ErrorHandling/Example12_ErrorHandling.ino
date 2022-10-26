@@ -217,6 +217,7 @@ void handleError(int8_t errorCode)
 void freeze()
 {
     Serial.println("Freezing program. Read the messages above to find and fix the error!");
+    Serial.flush(); // Wait for serial buffer to empty
     while(1);
 }
 
@@ -233,6 +234,7 @@ void giveHints()
     {
         // Wait for user input
         while(Serial.available() == false);
+        delay(100); // Extra delay in case characters don't all come at once
 
         // Read first character of user's input
         userInput = Serial.read();
