@@ -9,7 +9,7 @@ uint8_t i2cAddress = BMA400_I2C_ADDRESS_DEFAULT; // 0x14
 //uint8_t i2cAddress = BMA400_I2C_ADDRESS_SECONDARY; // 0x15
 
 // Pin used for interrupt detection
-int interruptPin = 5;
+int interruptPin = 2;
 
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
