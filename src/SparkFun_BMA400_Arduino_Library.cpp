@@ -407,7 +407,8 @@ int8_t BMA400::selfTest()
     return setMode(BMA400_MODE_NORMAL);
 }
 
-/// @brief Gets acceleration data from the sensor
+/// @brief Gets acceleration data from the sensor. This must be called to update
+/// the data struct
 /// @param data Struct containing acceleration of each axis, plus sensor time if
 /// included. See BMA400_SensorData
 /// @param sensorTime Whether to include sensor time in the data, default false

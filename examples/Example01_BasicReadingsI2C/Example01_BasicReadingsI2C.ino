@@ -12,7 +12,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example1 begin!");
+    Serial.println("BMA400 Example 1 - Basic Readings I2C");
 
     // Initialize the I2C library
     Wire.begin();
@@ -33,7 +33,8 @@ void setup()
 
 void loop()
 {
-    // Get measurements from the sensor
+    // Get measurements from the sensor. This must be called before accessing
+    // the acceleration data, otherwise it will never update
     accelerometer.getSensorData();
 
     // Print acceleration data

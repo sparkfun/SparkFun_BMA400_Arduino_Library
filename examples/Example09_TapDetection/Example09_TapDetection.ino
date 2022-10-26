@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example9 begin!");
+    Serial.println("BMA400 Example 9 - Tap Detection");
 
     // Initialize the I2C library
     Wire.begin();

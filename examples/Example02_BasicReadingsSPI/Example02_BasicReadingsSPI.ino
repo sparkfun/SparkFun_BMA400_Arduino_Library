@@ -12,7 +12,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example2 begin!");
+    Serial.println("BMA400 Example 2 - Basic Readings SPI");
 
     // Initialize the SPI library
     SPI.begin();
@@ -33,7 +33,8 @@ void setup()
 
 void loop()
 {
-    // Get measurements from the sensor
+    // Get measurements from the sensor. This must be called before accessing
+    // the acceleration data, otherwise it will never update
     accelerometer.getSensorData();
 
     // Print acceleration data

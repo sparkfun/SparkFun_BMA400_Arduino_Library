@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example11 begin!");
+    Serial.println("BMA400 Example 11 - Auto Power");
 
     // Initialize the I2C library
     Wire.begin();
@@ -136,7 +136,8 @@ void logAccelData()
     // Loop until the sensor returns to low power mode
     do
     {
-        // Get measurements from the sensor
+        // Get measurements from the sensor. This must be called before
+        // accessing the acceleration data, otherwise it will never update
         accelerometer.getSensorData();
 
         // Print acceleration data

@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example7 begin!");
+    Serial.println("BMA400 Example 7 - Orientation Change");
 
     // Initialize the I2C library
     Wire.begin();

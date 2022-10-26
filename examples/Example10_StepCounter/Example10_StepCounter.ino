@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example10 begin!");
+    Serial.println("BMA400 Example 10 - Step Counter");
 
     // Initialize the I2C library
     Wire.begin();

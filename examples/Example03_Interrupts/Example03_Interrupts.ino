@@ -18,7 +18,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example3 begin!");
+    Serial.println("BMA400 Example 3 - Interrupts");
 
     // Initialize the I2C library
     Wire.begin();
@@ -72,7 +72,8 @@ void loop()
         // Check if this is the "data ready" interrupt condition
         if(interruptStatus & BMA400_ASSERTED_DRDY_INT)
         {
-            // Get measurements from the sensor
+            // Get measurements from the sensor. This must be called before
+            // accessing the acceleration data, otherwise it will never update
             accelerometer.getSensorData();
 
             // Print acceleration data

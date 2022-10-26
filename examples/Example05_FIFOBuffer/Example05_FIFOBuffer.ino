@@ -25,7 +25,7 @@ void setup()
 {
     // Start serial
     Serial.begin(115200);
-    Serial.println("BMA400 Example5 begin!");
+    Serial.println("BMA400 Example 5 - FIFO Buffer");
 
     // Initialize the I2C library
     Wire.begin();
